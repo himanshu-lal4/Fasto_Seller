@@ -6,8 +6,9 @@ import {
     StyleSheet,
 
 } from 'react-native';
-import { COLORS, FONTS } from '../assets/theme';
-import styles from '../assets/theme/style';
+import { COLORS, FONTS } from '../../assets/theme';
+import styles from '../../assets/theme/style';
+
 const Button = ({ onPress,  tittle }) => {
     return (
         <View style={{
