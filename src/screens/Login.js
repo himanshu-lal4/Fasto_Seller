@@ -12,6 +12,7 @@ import AuthHeader from '../components/Common/AuthHeader';
 import LoginType from '../components/LoginType';
 import {COLORS, FONTS, SIZES, theme} from '../assets/theme';
 import Button from '../components/Common/Button';
+import Line from '../components/Common/Line';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -24,11 +25,7 @@ const Login = () => {
         <ScrollView>
           <AuthHeader tittle="Let's your in" />
           <LoginType />
-          <View>
-            <Text style={styles.ortext}>OR</Text>
-            <View style={styles.line1} />
-            <View style={styles.line2} />
-          </View>
+          <Line text="Or" />
           <Button
             color="#ee1c24"
             tittle="SIGN IN WITH PASSWORD"
@@ -57,7 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(18,38,54)',
   },
   ortext: {
-    marginLeft: 170,
+    marginLeft: 190,
     color: 'gray',
     marginTop: 30,
   },
@@ -65,15 +62,15 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'gray',
     marginVertical: -9,
-    width: 140,
+    width: 150,
     marginLeft: SIZES.basemarginleft,
   },
   line2: {
     height: 1,
     backgroundColor: 'gray',
     marginVertical: 8,
-    width: 148,
-    marginLeft: 200,
+    width: 150,
+    marginLeft: 240,
   },
   bottomView: {
     flexDirection: 'row',
@@ -81,7 +78,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: 'center',
   },
-
   icon1: {
     height: 100,
     width: 100,

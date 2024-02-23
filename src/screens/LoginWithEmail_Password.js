@@ -23,6 +23,7 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import Line from '../components/Common/Line';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -147,11 +148,12 @@ const LoginWithEmail_Password = () => {
               )}
             </Formik>
           </View>
-          <View style={styles.continue}>
-            <View style={styles.line}></View>
-            <Text style={{color: COLORS.gray}}>or continue with</Text>
-            <View style={styles.line}></View>
-          </View>
+          <Line
+            customStyle={styles.line}
+            text="or continue with"
+            line1Width={'34%'}
+            line2Width={'34%'}
+          />
           <View style={styles.icons}>
             <TouchableOpacity
               TouchableOpacity={0.7}
@@ -209,24 +211,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 30,
   },
+  line: {marginTop: '20%', marginBottom: '2%'},
   label: {
     color: COLORS.white,
     marginTop: 6,
   },
   reset: {color: '#008fb3', marginLeft: '30%', marginTop: 7},
-  continue: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginHorizontal: 35,
-    marginTop: 60,
-  },
-  line: {
-    width: 100,
-    borderBottomWidth: 1,
-    borderColor: COLORS.gray,
-    marginBottom: 8,
-    marginHorizontal: 10,
-  },
   google: {
     paddingHorizontal: 20,
     paddingVertical: 5,
