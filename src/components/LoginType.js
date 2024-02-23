@@ -71,7 +71,7 @@ const LoginType = () => {
 
   return (
     <View style={styles.authContainertext}>
-      <Card style={[styles.Card1, {backgroundColor: COLORS.graybackground}]}>
+      <Card style={[styles.Card1, {backgroundColor: '#413945'}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => {
@@ -79,17 +79,17 @@ const LoginType = () => {
           }}>
           <MaterialCommunityIcons
             name="facebook"
-            size={45}
-            color="rgb(23, 169, 253)"
+            size={50}
+            color="#0074f4"
             style={{}}
             type="MaterialCommunityIcons"
           />
-          <Text style={[FONTS.body3, {color: COLORS.white1, paddingLeft: 20}]}>
+          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
             Continue with Facebook
           </Text>
         </TouchableOpacity>
       </Card>
-      <Card style={[styles.Card1, {backgroundColor: COLORS.graybackground}]}>
+      <Card style={[styles.Card1, {backgroundColor: '#474f44'}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => {
@@ -97,26 +97,26 @@ const LoginType = () => {
           }}>
           <MaterialCommunityIcons
             name="google"
-            size={45}
+            size={50}
             color="white"
             type="MaterialCommunityIcons"
           />
-          <Text style={[FONTS.body3, {color: COLORS.white1, paddingLeft: 20}]}>
+          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
             Continue with Google
           </Text>
         </TouchableOpacity>
       </Card>
-      <Card style={[styles.Card1, {backgroundColor: COLORS.graybackground}]}>
+      <Card style={[styles.Card1, {backgroundColor: '#474f4f'}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => console.log('Google icon')}>
           <MaterialCommunityIcons
             name="apple"
-            size={45}
+            size={50}
             color="white"
             type="MaterialCommunityIcons"
           />
-          <Text style={[FONTS.body3, {color: COLORS.white1, paddingLeft: 20}]}>
+          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
             Continue with Apple
           </Text>
         </TouchableOpacity>
