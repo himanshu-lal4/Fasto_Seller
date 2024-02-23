@@ -30,7 +30,7 @@ const SubcategoryScreen = ({route}) => {
 
   // Function to save the selected subcategories
   const saveSelection = () => {
-    if (selectedSubcategories.length = 0) {
+    if ((selectedSubcategories.length = 0)) {
       Alert.alert('Attention', 'Please select at least one subcategory.');
       console.log('Selected Subcategories:', selectedSubcategories);
     } else {
@@ -39,34 +39,35 @@ const SubcategoryScreen = ({route}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <AuthHeader tittle={'SELECT A CATEGORY'} />
-        <View style={styles.section}>
-          <FlatList
-            data={subCategories}
-            renderItem={({item}) => (
-              <View
+      <AuthHeader tittle={'SELECT A CATEGORY'} />
+      <View style={{marginVertical: 25}}>
+        <FlatList
+          data={subCategories}
+          renderItem={({item}) => (
+            <View style={styles.section}>
+              <CheckBox
+                tintColors={{true: COLORS.white, false: 'white'}}
+                value={selectedSubcategories.includes(item)}
+                onValueChange={() => toggleSubcategory(item)}
+              />
+              <Text
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginVertical: 5,
-                  marginHorizontal: 10,
+                  color: COLORS.white,
+                  fontSize: 18,
+                  paddingHorizontal: 10,
                 }}>
-                <CheckBox
-                  tintColors={{true: COLORS.white, false: 'white'}}
-                  value={selectedSubcategories.includes(item)}
-                  onValueChange={() => toggleSubcategory(item)}
-                />
-                <Text style={{color: COLORS.white, fontSize: 18}}>{item}</Text>
-              </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
-          <TouchableOpacity onPress={saveSelection} style={styles.button}>
-            <Text>Save Selection</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+                {item}
+              </Text>
+            </View>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+        <TouchableOpacity onPress={saveSelection} style={styles.button}>
+          <Text style={{fontWeight: '600', color: 'black'}}>
+            Save Selection
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -76,21 +77,26 @@ export default SubcategoryScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgb(18,38,54)',
+    backgroundColor: '#202020',
     justifyContent: 'flex-start',
   },
   button: {
     height: 45,
-    backgroundColor: COLORS.buttoncolor,
+    backgroundColor: '#89b9ff',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 5,
     width: '90%',
     alignSelf: 'center',
     marginTop: 10,
   },
   section: {
-    marginVertical: 25,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+    marginHorizontal: 10,
+    padding: 15,
+    backgroundColor: '#082e66',
+    borderRadius: 8,
   },
 });

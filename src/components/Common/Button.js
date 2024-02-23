@@ -16,7 +16,7 @@ const Button = ({onPress, tittle}) => {
         onPress={() => {
           onPress();
         }}>
-        <Text style={[FONTS.body4, {color: COLORS.black, fontWeight: 'bold'}]}>
+        <Text style={[FONTS.body4, {color: COLORS.black, fontWeight: '700'}]}>
           {tittle}
         </Text>
       </TouchableOpacity>

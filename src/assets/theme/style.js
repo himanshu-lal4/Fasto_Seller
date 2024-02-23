@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   },
   customBorder: {borderColor: '#f00', borderWidth: 1},
   containerAuth: {
-    flex: 1,
+    // flex: 1, //creating bugs
     backgroundColor: COLORS.primaryBackgroundColor,
     marginTop: 30,
     marginLeft: SIZES.basemarginleft,
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   Card1: {
-    borderWidth: 1,
-    height: 75,
+    // borderWidth: 1, // not looking good so i commented it out
+    height: 80,
     width: '119%',
     borderRadius: 5,
     borderColor: 'rgb(31,48,62)',
@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 5,
-    width: '95%',
+    // elevation: 5, - shadow effect,, not looking good
+    width: '90%',
   },
 });
 export default styles;

@@ -172,7 +172,7 @@ const LoginWithEmail_Password = () => {
                 style={styles.icon}
                 name="logo-facebook"
                 size={32}
-                color={'blue'}
+                color={'#0074f4'}
               />
             </TouchableOpacity>
             <Icons
@@ -203,7 +203,7 @@ export default LoginWithEmail_Password;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgb(18,38,54)',
+    backgroundColor: '#202020',
   },
   checkboxContainer: {
     display: 'flex',

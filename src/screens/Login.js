@@ -23,7 +23,7 @@ const Login = () => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         style={styles.container}>
         <ScrollView>
-          <AuthHeader tittle="Let's your in" />
+          <AuthHeader tittle="Let's you in" />
           <LoginType />
           <Line text="Or" />
           <Button
@@ -38,7 +38,7 @@ const Login = () => {
               Don't have an account?
             </Text>
             <Text
-              style={[FONTS.body4, {color: '#008fb3', marginLeft: 5}]}
+              style={[FONTS.body4, {color: '#6bbaff', marginLeft: 5}]}
               onPress={() => {}}>
               Sign up
             </Text>
@@ -51,7 +51,7 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'rgb(18,38,54)',
+    backgroundColor: '#202020',
   },
   ortext: {
     marginLeft: 190,

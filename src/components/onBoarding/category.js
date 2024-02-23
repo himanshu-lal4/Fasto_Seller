@@ -35,14 +35,10 @@ const CategoryScreen = () => {
         data={servicesProvided}
         renderItem={({item}) => (
           <TouchableOpacity onPress={() => handleCategorySelection(item)}>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginVertical: 5,
-              }}>
+            <View style={styles.section}>
               <RadioButton
                 value={item.category}
+                color={'white'}
                 status={
                   selectedCategory?.category === item.category
                     ? 'checked'
@@ -50,17 +46,25 @@ const CategoryScreen = () => {
                 }
                 onPress={() => handleCategorySelection(item)}
               />
-              <Text style={{color: COLORS.white}}>{item.category}</Text>
+              <Text
+                style={{
+                  color: COLORS.white,
+                  fontSize: 15,
+                  marginHorizontal: 10,
+                }}>
+                {item.category}
+              </Text>
             </View>
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
       />
+
       <TouchableOpacity
         onPress={handleContinue}
         disabled={!selectedCategory}
         style={styles.button}>
-        <Text>CONTINUE</Text>
+        <Text style={{fontWeight: '600', color: 'black'}}>CONTINUE</Text>
       </TouchableOpacity>
     </View>
   );
@@ -70,16 +74,23 @@ export default CategoryScreen;
 const styles = StyleSheet.create({
   button: {
     height: 45,
-    backgroundColor: COLORS.buttoncolor,
+    backgroundColor: '#89b9ff',
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 5,
     width: '90%',
     alignSelf: 'center',
-    marginTop: 10,
+    margin: 10,
   },
   container: {
     padding: 10,
+  },
+  section: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 5,
+    padding: 15,
+    backgroundColor: '#082e66',
+    borderRadius: 8,
   },
 });
