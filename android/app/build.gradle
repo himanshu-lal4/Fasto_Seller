@@ -111,6 +111,7 @@ dependencies {
     implementation project(':react-native-fbsdk-next')
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
+
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {

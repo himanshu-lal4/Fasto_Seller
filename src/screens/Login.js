@@ -33,7 +33,7 @@ const Login = () => {
             color="#ee1c24"
             tittle="SIGN IN WITH PASSWORD"
             onPress={() => {
-              handleSubmit();
+              navigation.navigate('LoginWithEmail_Password');
             }}
           />
           <View style={styles.bottomView}>

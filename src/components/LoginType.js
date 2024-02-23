@@ -4,25 +4,35 @@ import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
 import MaterialCommunityIcons from '../utils/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
+import {useNavigation} from '@react-navigation/native';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import {AccessToken, LoginButton, LoginManager} from 'react-native-fbsdk-next';
+import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
 
 const LoginType = () => {
+  const navigation = useNavigation();
+
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
         '843686181066-b0crro208ejatlau4vc52ohapmg4v12f.apps.googleusercontent.com',
+      client_type: 3,
+      offlineAccess: true,
     });
   }, []);
 
-  signIn = async () => {
+  //google Sign In
+  const googleSignInHandle = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.configure();
       const userInfo = await GoogleSignin.signIn();
-      setState({userInfo});
+      console.log(userInfo);
+      if (userInfo.length !== 0) {
+        navigation.navigate('OnBoardScreen');
+        console.log('Atishay');
+      }
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // user cancelled the login flow
@@ -32,11 +42,13 @@ const LoginType = () => {
         // play services not available or outdated
       } else {
         // some other error happened
+        console.log(error);
       }
     }
   };
 
-  const handleFacebookLogin = async () => {
+  //Facebook Sign In
+  const facebookSignInHandle = async () => {
     try {
       const result = await LoginManager.logInWithPermissions([
         'public_profile',
@@ -47,6 +59,8 @@ const LoginType = () => {
         const data = await AccessToken.getCurrentAccessToken();
         if (data) {
           console.log(data.accessToken.toString());
+          navigation.navigate('OnBoardScreen');
+          console.log(data);
           // Call onLoginFinished callback or perform further actions here
         }
       }
@@ -60,7 +74,9 @@ const LoginType = () => {
       <Card style={[styles.Card1, {backgroundColor: COLORS.graybackground}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
-          onPress={handleFacebookLogin}>
+          onPress={() => {
+            facebookSignInHandle();
+          }}>
           <MaterialCommunityIcons
             name="facebook"
             size={45}
@@ -74,7 +90,11 @@ const LoginType = () => {
         </TouchableOpacity>
       </Card>
       <Card style={[styles.Card1, {backgroundColor: COLORS.graybackground}]}>
-        <TouchableOpacity style={stylesPage.cardBox} onPress={() => signIn()}>
+        <TouchableOpacity
+          style={stylesPage.cardBox}
+          onPress={() => {
+            googleSignInHandle();
+          }}>
           <MaterialCommunityIcons
             name="google"
             size={45}
