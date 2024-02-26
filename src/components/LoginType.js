@@ -1,10 +1,11 @@
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
 import MaterialCommunityIcons from '../utils/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
 import {useNavigation} from '@react-navigation/native';
+import featureFlag from './remoteConfig';
 import {
   GoogleSignin,
   statusCodes,
@@ -13,6 +14,8 @@ import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
 
 const LoginType = () => {
   const navigation = useNavigation();
+  const isAppleLoginEnabled = featureFlag();
+  
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -105,21 +108,27 @@ const LoginType = () => {
           </Text>
         </TouchableOpacity>
       </Card>
-      <Card style={[styles.Card1, {backgroundColor: '#474f4f'}]}>
-        <TouchableOpacity
-          style={stylesPage.cardBox}
-          onPress={() => console.log('Google icon')}>
-          <MaterialCommunityIcons
-            name="apple"
-            size={50}
-            color="white"
-            type="MaterialCommunityIcons"
-          />
-          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-            Continue with Apple
-          </Text>
-        </TouchableOpacity>
-      </Card>
+
+      {isAppleLoginEnabled ? (
+        <>
+          <Card style={[styles.Card1, {backgroundColor: '#474f4f'}]}>
+            <TouchableOpacity
+              style={stylesPage.cardBox}
+              onPress={() => console.log('Apple icon')}>
+              <MaterialCommunityIcons
+                name="apple"
+                size={50}
+                color="white"
+                type="MaterialCommunityIcons"
+              />
+              <Text
+                style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
+                Continue with Apple
+              </Text>
+            </TouchableOpacity>
+          </Card>
+        </>
+      ) : null}
     </View>
   );
 };
