@@ -12,10 +12,12 @@ import AuthHeader from '../Common/AuthHeader';
 import {COLORS} from '../../assets/theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
 const SubcategoryScreen = ({route}) => {
   const {subCategories} = route.params;
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
+  const navigation = useNavigation();
 
   // Function to handle checkbox toggle
   const toggleSubcategory = subcategory => {
@@ -39,7 +41,10 @@ const SubcategoryScreen = ({route}) => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <AuthHeader tittle={'SELECT A CATEGORY'} />
+      <AuthHeader
+        tittle={'SELECT A CATEGORY'}
+        onPress={() => navigation.goBack()}
+      />
       <View style={{marginVertical: 25}}>
         <FlatList
           data={subCategories}

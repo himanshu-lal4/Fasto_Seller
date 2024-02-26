@@ -3,12 +3,17 @@ import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AuthHeader from '../components/Common/AuthHeader';
 import Category from '../components/onBoarding/category';
+import {useNavigation} from '@react-navigation/native';
 
 const OnBoardScreen = () => {
+  const navigation = useNavigation();
   return (
     <ScrollView>
       <SafeAreaView style={styles.container}>
-        <AuthHeader tittle={`LET'S GET YOU STARTED`} />
+        <AuthHeader
+          tittle={`LET'S GET YOU STARTED`}
+          onPress={() => navigation.goBack()}
+        />
         <Category />
       </SafeAreaView>
     </ScrollView>

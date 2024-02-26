@@ -37,9 +37,11 @@ const validationSchema = Yup.object().shape({
 const LoginWithEmail_Password = () => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
-  const handleSubmit = values => {
-    if (checked) {
+  const handleSubmit = (values, actions) => {
+    if (values) {
       console.log(values);
+      navigation.navigate('OnBoardScreen');
+      actions.resetForm();
     }
   };
 
@@ -95,7 +97,12 @@ const LoginWithEmail_Password = () => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         style={styles.container}>
         <ScrollView>
-          <AuthHeader tittle="Sign In with Password" />
+          <AuthHeader
+            tittle="Sign In with Password"
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
           <View style={{marginTop: 30}}>
             <Formik
               initialValues={{email: '', password: ''}}
@@ -140,9 +147,7 @@ const LoginWithEmail_Password = () => {
                   <Button
                     color="#ee1c24"
                     tittle="SIGN IN"
-                    onPress={() => {
-                      navigation.navigate('OnBoardScreen');
-                    }}
+                    onPress={handleSubmit}
                   />
                 </View>
               )}

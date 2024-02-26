@@ -5,7 +5,7 @@ import {COLORS} from '../../assets/theme';
 import styles from '../../assets/theme/style';
 import VectorIcon from '../../utils/VectorIcon';
 
-const AuthHeader = ({tittle}) => {
+const AuthHeader = ({tittle, onPress}) => {
   const navigation = useNavigation();
   return (
     <View style={styles.containerAuth}>
@@ -14,7 +14,7 @@ const AuthHeader = ({tittle}) => {
         type="Ionicons"
         size={24}
         color={COLORS.white}
-        onPress={() => navigation.goBack()}
+        onPress={onPress}
       />
       <Text style={styles.authContainertext}>{tittle}</Text>
     </View>
