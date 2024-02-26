@@ -1,4 +1,4 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AuthHeader from '../components/Common/AuthHeader';
@@ -8,15 +8,13 @@ import {useNavigation} from '@react-navigation/native';
 const OnBoardScreen = () => {
   const navigation = useNavigation();
   return (
-    <ScrollView>
-      <SafeAreaView style={styles.container}>
-        <AuthHeader
-          tittle={`LET'S GET YOU STARTED`}
-          onPress={() => navigation.goBack()}
-        />
-        <Category />
-      </SafeAreaView>
-    </ScrollView>
+    <SafeAreaView style={styles.container}>
+      <AuthHeader
+        tittle={`LET'S GET YOU STARTED`}
+        onPress={() => navigation.goBack()}
+      />
+      <Category />
+    </SafeAreaView>
   );
 };
 

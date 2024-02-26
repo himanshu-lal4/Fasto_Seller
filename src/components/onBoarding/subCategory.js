@@ -11,7 +11,7 @@ import CheckBox from '@react-native-community/checkbox';
 import AuthHeader from '../Common/AuthHeader';
 import {COLORS} from '../../assets/theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {ScrollView} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-virtualized-view';
 import {useNavigation} from '@react-navigation/native';
 
 const SubcategoryScreen = ({route}) => {
@@ -32,7 +32,7 @@ const SubcategoryScreen = ({route}) => {
 
   // Function to save the selected subcategories
   const saveSelection = () => {
-    if ((selectedSubcategories.length = 0)) {
+    if (selectedSubcategories.length == 0) {
       Alert.alert('Attention', 'Please select at least one subcategory.');
       console.log('Selected Subcategories:', selectedSubcategories);
     } else {
@@ -46,27 +46,29 @@ const SubcategoryScreen = ({route}) => {
         onPress={() => navigation.goBack()}
       />
       <View style={{marginVertical: 25}}>
-        <FlatList
-          data={subCategories}
-          renderItem={({item}) => (
-            <View style={styles.section}>
-              <CheckBox
-                tintColors={{true: COLORS.white, false: 'white'}}
-                value={selectedSubcategories.includes(item)}
-                onValueChange={() => toggleSubcategory(item)}
-              />
-              <Text
-                style={{
-                  color: COLORS.white,
-                  fontSize: 18,
-                  paddingHorizontal: 10,
-                }}>
-                {item}
-              </Text>
-            </View>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
+        <ScrollView>
+          <FlatList
+            data={subCategories}
+            renderItem={({item}) => (
+              <View style={styles.section}>
+                <CheckBox
+                  tintColors={{true: COLORS.white, false: 'white'}}
+                  value={selectedSubcategories.includes(item)}
+                  onValueChange={() => toggleSubcategory(item)}
+                />
+                <Text
+                  style={{
+                    color: COLORS.white,
+                    fontSize: 18,
+                    paddingHorizontal: 10,
+                  }}>
+                  {item}
+                </Text>
+              </View>
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </ScrollView>
         <TouchableOpacity onPress={saveSelection} style={styles.button}>
           <Text style={{fontWeight: '600', color: 'black'}}>
             Save Selection

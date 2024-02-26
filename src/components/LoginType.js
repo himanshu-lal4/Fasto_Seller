@@ -31,7 +31,6 @@ const LoginType = () => {
       console.log(userInfo);
       if (userInfo.length !== 0) {
         navigation.navigate('OnBoardScreen');
-        console.log('Atishay');
       }
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
