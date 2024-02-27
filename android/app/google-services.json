@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "680747911063",
+    "project_id": "fasto-seller",
+    "storage_bucket": "fasto-seller.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680747911063:android:23a7d139eaa4f0e783e6d2",
+        "android_client_info": {
+          "package_name": "com.userpanel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKH-Sl6YOM81VUoWd5uKbCVDuogw2aiCM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

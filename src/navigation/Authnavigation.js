@@ -1,9 +1,11 @@
-import { StatusBar } from 'react-native'
-import React from 'react'
+import {StatusBar} from 'react-native';
+import React from 'react';
 import Login from '../screens/Login';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { COLORS } from '../assets/theme';
+import OnBoardScreen from '../screens/OnBoardScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+import {COLORS} from '../assets/theme';
+import SubcategoryScreen from '../components/onBoarding/subCategory';
+import LoginWithEmail_Password from '../screens/LoginWithEmail_Password';
 
 const Stack = createStackNavigator();
 
@@ -12,15 +14,20 @@ const Authnavigation = () => {
     <>
       <StatusBar backgroundColor={COLORS.primaryBackgroundColor} />
       <Stack.Navigator
-        initialRouteName='Login'
+        initialRouteName="Login"
         screenOptions={{
-          headerShown: false
+          headerShown: false,
         }}>
-        <Stack.Screen name='Login' component={Login} />
-       
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
+        <Stack.Screen name="SubcategoryScreen" component={SubcategoryScreen} />
+        <Stack.Screen
+          name="LoginWithEmail_Password"
+          component={LoginWithEmail_Password}
+        />
       </Stack.Navigator>
     </>
-  )
-}
+  );
+};
 
 export default Authnavigation;
