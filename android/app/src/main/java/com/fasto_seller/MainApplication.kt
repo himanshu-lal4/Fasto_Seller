@@ -1,4 +1,4 @@
-package com.userpanel
+package com.fasto_seller
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -4,6 +4,7 @@ import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
 import MaterialCommunityIcons from '../utils/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
+import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import {
   GoogleSignin,
@@ -17,31 +18,28 @@ const LoginType = () => {
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        '843686181066-b0crro208ejatlau4vc52ohapmg4v12f.apps.googleusercontent.com',
-      client_type: 3,
-      offlineAccess: true,
+        '750688566312-2s51gk33qf9ju5e3mfied01npk0ho5eg.apps.googleusercontent.com',
     });
   }, []);
 
   //google Sign In
   const googleSignInHandle = async () => {
     try {
-      await GoogleSignin.configure();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-      if (userInfo.length !== 0) {
+      await GoogleSignin.hasPlayServices();
+      const {idToken} = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      if (idToken) {
         navigation.navigate('OnBoardScreen');
-        console.log('Atishay');
       }
+      return auth().signInWithCredential(googleCredential);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
+        console.log('user canceil the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
+        console.log('google sign in is in progress');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
+        console.log('play services not avaliable or outdated');
       } else {
-        // some other error happened
         console.log(error);
       }
     }
