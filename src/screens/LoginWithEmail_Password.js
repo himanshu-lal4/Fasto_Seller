@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import InputText from '../components/Common/InputText';
 import Button from '../components/Common/Button';
 import Icons from 'react-native-vector-icons/Ionicons';
@@ -23,6 +23,7 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 import Line from '../components/Common/Line';
 
 const validationSchema = Yup.object().shape({
@@ -34,36 +35,73 @@ const validationSchema = Yup.object().shape({
     .min(6, 'Password must be at least 6 characters'),
 });
 
+const createUserWithEmailPassword = (email, password) => {
+  auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      console.log('User account created & signed in!');
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') {
+        console.log('That email address is already in use!');
+      }
+
+      if (error.code === 'auth/invalid-email') {
+        console.log('That email address is invalid!');
+      }
+
+      console.error(error);
+    });
+};
+
+const signInUser = (email, password) => {
+  auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(userCredential => {
+      console.log('User loggesd in Successfully' + userCredential);
+    })
+    .catch(error => {
+      console.log('error while login ' + error);
+    });
+};
+
 const LoginWithEmail_Password = () => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
+
   const handleSubmit = (values, actions) => {
     if (values) {
-      console.log(values);
-      navigation.navigate('OnBoardScreen');
+      createUserWithEmailPassword(values.email, values.password);
+      // signInUser(values.email, values.password);
+      // navigation.navigate('OnBoardScreen');
       actions.resetForm();
     }
   };
 
   //google Sign In
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '750688566312-2s51gk33qf9ju5e3mfied01npk0ho5eg.apps.googleusercontent.com',
+    });
+  }, []);
   const googleSignInHandle = async () => {
     try {
-      await GoogleSignin.configure();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-      if (userInfo.length !== 0) {
+      await GoogleSignin.hasPlayServices();
+      const {idToken} = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      if (idToken) {
         navigation.navigate('OnBoardScreen');
-        console.log('Atishay');
       }
+      return auth().signInWithCredential(googleCredential);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
+        console.log('user canceil the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
+        console.log('google sign in is in progress');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
+        console.log('play services not avaliable or outdated');
       } else {
-        // some other error happened
         console.log(error);
       }
     }
