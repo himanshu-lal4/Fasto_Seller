@@ -23,7 +23,10 @@ const Login = () => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         style={styles.container}>
         <ScrollView>
-          <AuthHeader tittle="Let's you in" />
+          <AuthHeader
+            tittle="Let's you in"
+            onPress={() => navigation.goBack()}
+          />
           <LoginType />
           <Line text="Or" />
           <Button

@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     height: 45,
     backgroundColor: COLORS.buttoncolor,
     borderRadius: 8,
+    paddingHorizontal: '10%',
     alignItems: 'center',
     justifyContent: 'center',
     // elevation: 5, - shadow effect,, not looking good

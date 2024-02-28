@@ -14,7 +14,6 @@ const Authnavigation = () => {
     <>
       <StatusBar backgroundColor={COLORS.primaryBackgroundColor} />
       <Stack.Navigator
-        initialRouteName="Login"
         screenOptions={{
           headerShown: false,
         }}>
