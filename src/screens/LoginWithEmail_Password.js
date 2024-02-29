@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     marginTop: 6,
   },
-  reset: {color: COLORS.blue, marginLeft: '30%', marginTop: 7},
+  reset: {color: COLORS.darkBlue, marginLeft: '30%', marginTop: 7},
   google: {
     paddingHorizontal: 20,
     paddingVertical: 5,

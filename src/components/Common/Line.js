@@ -33,13 +33,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {marginHorizontal: 10, color: COLORS.black},
+  text: {marginHorizontal: 10, color: COLORS.darkBlue},
   line1: {
     height: 1,
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.darkBlue,
   },
   line2: {
     height: 1,
-    backgroundColor: COLORS.black,
+    backgroundColor: COLORS.darkBlue,
   },
 });

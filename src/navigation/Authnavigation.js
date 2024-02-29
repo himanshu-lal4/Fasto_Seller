@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 const Authnavigation = () => {
   return (
     <>
-      <StatusBar barStyle={'light-content'} backgroundColor={COLORS.blue} />
+      <StatusBar barStyle={'light-content'} backgroundColor={COLORS.darkBlue} />
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

@@ -68,15 +68,13 @@ const Login = () => {
             <LoginType />
             <Line text="Or" />
             <Button
-              color="#0a57fd"
-              textColor="white"
               tittle="sign in with password"
               onPress={() => {
                 navigation.navigate('LoginWithEmail_Password');
               }}
             />
             <View style={styles.bottomView}>
-              <Text style={[FONTS.h3, {color: COLORS.blue}]}>
+              <Text style={[FONTS.h3, {color: COLORS.darkBlue}]}>
                 Don't have an account?
               </Text>
               <Text

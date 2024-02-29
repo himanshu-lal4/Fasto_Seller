@@ -12,7 +12,7 @@ const InputText = ({
   return (
     <View style={{marginTop: 20}}>
       <View style={styles.labelContainer}>
-        <Text style={{color: COLORS.blue}}>{placeholder}</Text>
+        <Text style={{color: '#050087'}}>{placeholder}</Text>
       </View>
       <TextInput
         style={[styles.textInput, inputStyle]}
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     left: 15,
   },
   textInput: {
-    borderColor: COLORS.blue,
+    borderColor: '#050087',
     borderWidth: 2,
     color: COLORS.black,
     width: '94%',

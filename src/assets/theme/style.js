@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   btn: {
     elevation: 5,
     height: 45,
-    backgroundColor: COLORS.blue,
+    backgroundColor: COLORS.darkBlue,
     borderRadius: 30,
     paddingHorizontal: '10%',
     marginBottom: '5%',
