@@ -4,14 +4,12 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import InputText from '../components/Common/InputText';
 import Button from '../components/Common/Button';
-import Icons from 'react-native-vector-icons/Ionicons';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
 import {COLORS, FONTS} from '../assets/theme';
@@ -23,7 +21,6 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import Line from '../components/Common/Line';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -110,7 +107,7 @@ const LoginWithEmail_Password = () => {
               onSubmit={handleSubmit}>
               {({handleChange, handleSubmit, values, errors, touched}) => (
                 <View>
-                  <View style={{height: 90}}>
+                  <View>
                     <InputText
                       value={values.email}
                       placeholder="Email"
@@ -120,11 +117,12 @@ const LoginWithEmail_Password = () => {
                       <Text style={styles.errorText}>{errors.email}</Text>
                     )}
                   </View>
-                  <View style={{height: 90}}>
+                  <View>
                     <InputText
                       value={values.password}
                       placeholder="Password"
                       onChangeText={handleChange('password')}
+                      style={{height: 50}}
                       secure={true}
                     />
                     {touched.password && errors.password && (
@@ -133,67 +131,34 @@ const LoginWithEmail_Password = () => {
                   </View>
 
                   <View style={styles.checkboxContainer}>
-                    <Checkbox
-                      status={checked ? 'checked' : 'unchecked'}
-                      onPress={() => {
-                        setChecked(!checked);
-                      }}
-                    />
-                    <Text style={styles.label}>Remember me</Text>
+                    <View
+                      style={{flexDirection: 'row', justifyContent: 'center'}}>
+                      <Checkbox
+                        color="#0a57fd"
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                          setChecked(!checked);
+                        }}
+                      />
+                      <Text style={styles.label}>Remember me</Text>
+                    </View>
+
                     <TouchableOpacity>
                       <Text style={styles.reset}>Reset Password</Text>
                     </TouchableOpacity>
                   </View>
-                  <Button
-                    color="#ee1c24"
-                    tittle="SIGN IN"
-                    onPress={handleSubmit}
-                  />
+
+                  <Button tittle="sign in" onPress={() => handleSubmit} />
                 </View>
               )}
             </Formik>
           </View>
-          <Line
-            customStyle={styles.line}
-            text="or continue with"
-            line1Width={'34%'}
-            line2Width={'34%'}
-          />
-          <View style={styles.icons}>
-            <TouchableOpacity
-              TouchableOpacity={0.7}
-              onPress={googleSignInHandle}>
-              <View style={styles.google}>
-                <Image
-                  style={styles.googleIcon}
-                  source={require('../assets/icons/Google.webp')}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              TouchableOpacity={0.7}
-              onPress={facebookSignInHandle}>
-              <Icons
-                style={styles.icon}
-                name="logo-facebook"
-                size={32}
-                color={'#0074f4'}
-              />
-            </TouchableOpacity>
-            <Icons
-              style={styles.icon}
-              name="logo-apple"
-              size={32}
-              color={COLORS.white1}
-            />
-          </View>
-
           <View style={styles.bottomView}>
-            <Text style={[FONTS.body4, {color: COLORS.white1}]}>
+            <Text style={[FONTS.body4, {color: COLORS.black}]}>
               Don't have an account?
             </Text>
             <Text
-              style={[FONTS.body4, {color: '#008fb3', marginLeft: 5}]}
+              style={[FONTS.body4, {color: COLORS.blue, marginLeft: 5}]}
               onPress={() => {}}>
               Sign up
             </Text>
@@ -208,20 +173,21 @@ export default LoginWithEmail_Password;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#202020',
+    backgroundColor: 'white',
   },
   checkboxContainer: {
-    display: 'flex',
+    width: '100%',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     marginHorizontal: 20,
     marginTop: 30,
   },
   line: {marginTop: '20%', marginBottom: '2%'},
   label: {
-    color: COLORS.white,
+    color: COLORS.black,
     marginTop: 6,
   },
-  reset: {color: '#008fb3', marginLeft: '30%', marginTop: 7},
+  reset: {color: COLORS.darkBlue, marginLeft: '30%', marginTop: 7},
   google: {
     paddingHorizontal: 20,
     paddingVertical: 5,

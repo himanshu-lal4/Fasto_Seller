@@ -12,9 +12,8 @@ const Stack = createStackNavigator();
 const Authnavigation = () => {
   return (
     <>
-      <StatusBar backgroundColor={COLORS.primaryBackgroundColor} />
+      <StatusBar barStyle={'light-content'} backgroundColor={COLORS.darkBlue} />
       <Stack.Navigator
-        initialRouteName="Login"
         screenOptions={{
           headerShown: false,
         }}>
