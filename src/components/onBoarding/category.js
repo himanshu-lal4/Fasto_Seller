@@ -91,11 +91,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   section: {
+    backgroundColor: COLORS.secondaryButtonColor,
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 8,
     padding: 10,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderRadius: 8,
   },
   selectedItem: {
