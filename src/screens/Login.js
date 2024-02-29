@@ -5,8 +5,10 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   ScrollView,
+  Image,
+  Animated,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import AuthHeader from '../components/Common/AuthHeader';
 import LoginType from '../components/LoginType';
@@ -16,36 +18,74 @@ import Line from '../components/Common/Line';
 
 const Login = () => {
   const navigation = useNavigation();
+  const slideUpAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(slideUpAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        style={styles.container}>
-        <ScrollView>
+        style={{flex: 1}}>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'space-between',
+          }}>
           <AuthHeader
             tittle="Let's you in"
             onPress={() => navigation.goBack()}
           />
-          <LoginType />
-          <Line text="Or" />
-          <Button
-            color="#ee1c24"
-            tittle="SIGN IN WITH PASSWORD"
-            onPress={() => {
-              navigation.navigate('LoginWithEmail_Password');
-            }}
+          <Image
+            source={require('../assets/images/signin.png')}
+            style={{height: 250, width: 250, alignSelf: 'center'}}
           />
-          <View style={styles.bottomView}>
-            <Text style={[FONTS.body4, {color: COLORS.white1}]}>
-              Don't have an account?
-            </Text>
-            <Text
-              style={[FONTS.body4, {color: '#6bbaff', marginLeft: 5}]}
-              onPress={() => {}}>
-              Sign up
-            </Text>
-          </View>
+          <Animated.View
+            style={[
+              styles.section,
+              {
+                transform: [
+                  {
+                    translateY: slideUpAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [100, 0],
+                    }),
+                  },
+                ],
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+              },
+            ]}>
+            <LoginType />
+            <Line text="Or" />
+            <Button
+              color="#0a57fd"
+              textColor="white"
+              tittle="sign in with password"
+              onPress={() => {
+                navigation.navigate('LoginWithEmail_Password');
+              }}
+            />
+            <View style={styles.bottomView}>
+              <Text style={[FONTS.h3, {color: COLORS.blue}]}>
+                Don't have an account?
+              </Text>
+              <Text
+                style={[FONTS.h3, {color: 'black', marginLeft: 5}]}
+                onPress={() => {}}>
+                Sign up
+              </Text>
+            </View>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -54,11 +94,11 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#202020',
+    backgroundColor: COLORS.secondaryBackground, //#0a57fd
   },
   ortext: {
     marginLeft: 190,
-    color: 'gray',
+    color: 'black',
     marginTop: 30,
   },
   line1: {
@@ -77,13 +117,24 @@ const styles = StyleSheet.create({
   },
   bottomView: {
     flexDirection: 'row',
-    marginTop: 20,
+    marginTop: 30,
     marginBottom: 10,
     justifyContent: 'center',
   },
   icon1: {
     height: 100,
     width: 100,
+  },
+  section: {
+    elevation: 30,
+    paddingTop: 40,
+    borderWidth: 0.5,
+    borderColor: COLORS.lightGray,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    backgroundColor: COLORS.white,
+    justifyContent: 'flex-end',
+    paddingBottom: 20,
   },
 });
 

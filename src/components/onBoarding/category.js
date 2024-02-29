@@ -1,17 +1,11 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  Button,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import {RadioButton} from 'react-native-paper';
 import {servicesProvided} from './ServicesData';
 import {useNavigation} from '@react-navigation/native';
 import {COLORS} from '../../assets/theme';
 import {ScrollView} from 'react-native-virtualized-view';
+import Button from '../Common/Button';
 
 const CategoryScreen = () => {
   const navigation = useNavigation();
@@ -64,12 +58,13 @@ const CategoryScreen = () => {
           />
         </View>
       </ScrollView>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={handleContinue}
         disabled={!selectedCategory}
         style={styles.button}>
         <Text style={{fontWeight: '600', color: 'black'}}>CONTINUE</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <Button tittle={'continue'} onPress={handleContinue} />
     </>
   );
 };
@@ -77,16 +72,6 @@ const CategoryScreen = () => {
 export default CategoryScreen;
 
 const styles = StyleSheet.create({
-  button: {
-    height: 45,
-    backgroundColor: '#89b9ff',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '90%',
-    alignSelf: 'center',
-    margin: 10,
-  },
   container: {
     padding: 10,
   },

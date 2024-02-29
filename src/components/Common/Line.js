@@ -26,20 +26,20 @@ export default Line;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: '25%',
+    marginTop: '20%',
     marginBottom: '5%',
     flexDirection: 'row',
     marginHorizontal: SIZES.basemarginleft,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {marginHorizontal: 10, color: 'white'},
+  text: {marginHorizontal: 10, color: COLORS.black},
   line1: {
     height: 1,
-    backgroundColor: 'gray',
+    backgroundColor: COLORS.black,
   },
   line2: {
     height: 1,
-    backgroundColor: 'gray',
+    backgroundColor: COLORS.black,
   },
 });
