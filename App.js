@@ -1,11 +1,14 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import Index from './src/navigation/Index'
+import React, {useEffect} from 'react';
+import Index from './src/navigation/Index';
+import {registerNotifee} from './src/components/SendNotification';
 
 const App = () => {
-  return (
-    <Index />
-  )
-}
+  //setup notification
+  useEffect(() => {
+    registerNotifee();
+  }, []);
 
-export default App
+  return <Index />;
+};
+
+export default App;
