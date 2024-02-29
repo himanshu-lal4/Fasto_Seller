@@ -2,7 +2,7 @@ import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
-import MaterialCommunityIcons from '../utils/VectorIcon';
+import VectorIcon from '../assets/VectorIcon/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
 import {useNavigation} from '@react-navigation/native';
 import featureFlag from './remoteConfig';
@@ -79,7 +79,7 @@ const LoginType = () => {
           onPress={() => {
             facebookSignInHandle();
           }}>
-          <MaterialCommunityIcons
+          <VectorIcon
             name="facebook"
             size={50}
             color="#3b5998"
@@ -112,7 +112,7 @@ const LoginType = () => {
             <TouchableOpacity
               style={stylesPage.cardBox}
               onPress={() => console.log('Apple icon')}>
-              <MaterialCommunityIcons
+              <VectorIcon
                 name="apple"
                 size={50}
                 color="gray"

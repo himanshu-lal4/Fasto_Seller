@@ -41,8 +41,8 @@ const styles = StyleSheet.create({
     left: 15,
   },
   textInput: {
-    borderColor: '#318ce7',
-    borderWidth: 1,
+    borderColor: COLORS.blue,
+    borderWidth: 2,
     color: COLORS.black,
     width: '94%',
     fontSize: 18,

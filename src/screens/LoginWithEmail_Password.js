@@ -4,14 +4,12 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 import InputText from '../components/Common/InputText';
 import Button from '../components/Common/Button';
-import Icons from 'react-native-vector-icons/Ionicons';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
 import {COLORS, FONTS} from '../assets/theme';
@@ -23,7 +21,6 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import Line from '../components/Common/Line';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
