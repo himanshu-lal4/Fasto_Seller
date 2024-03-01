@@ -3,11 +3,10 @@ import QRCode from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
 import React, {useRef, useState} from 'react';
-// import VectorIcon from '../../utils/VectorIcon';
 import VectorIcon from '../assets/VectorIcon/VectorIcon';
 
 const Qr_codeScreen = () => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState('default');
   const [QRImage, setQRImage] = useState('');
   const ref = useRef();
 

@@ -7,6 +7,7 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {BlurView} from '@react-native-community/blur';
@@ -28,26 +29,48 @@ const SelectImage = ({handleSelectOption}) => {
   }, []);
 
   //capture Image from Camera
-  const captureImage = () => {
-    launchCamera({mediaType: 'photo'}, response => {
-      if (response.didCancel) {
-        console.log('user cancel the action');
-      } else if (response.errorCode) {
-        console.log(`Error while opening the gallery ${response.errorCode}`);
-      } else if (response.errorMessage) {
-        console.log(`error message is ${response.errorMessage}`);
+  const captureImage = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'This app needs access to your camera.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        launchCamera({mediaType: 'photo'}, response => {
+          if (response.didCancel) {
+            console.log('User canceled the action');
+          } else if (response.errorCode) {
+            console.log(`Error while opening the Camera ${response.errorCode}`);
+          } else if (response.errorMessage) {
+            console.log(`Error message is ${response.errorMessage}`);
+          } else {
+            console.log(response.assets[0].uri);
+            Alert.alert('Success!', 'Image Uploaded');
+            navigation.navigate('QR_codeScreen');
+          }
+        });
       } else {
-        console.log(response.assets[0].uri);
-        Alert.alert('Success!', 'Image Uploaded');
-        // navigation.goBack();
-        navigation.navigate('QR_codeScreen');
+        console.log('Camera permission denied');
+        Alert.alert(
+          'Permission Denied',
+          'You need to grant camera permission to use this feature.',
+        );
       }
-    });
+    } catch (err) {
+      console.warn(err);
+    }
   };
 
   //select Image from gallery
   const chooseFile = () => {
-    launchImageLibrary({mediaType: 'photo', selectionLimit: 0}, response => {
+    launchImageLibrary({mediaType: 'photo', selectionLimit: 10}, response => {
       if (response.didCancel) {
         console.log('user cancel the action');
       } else if (response.errorCode) {
@@ -57,7 +80,6 @@ const SelectImage = ({handleSelectOption}) => {
       } else {
         console.log(response);
         Alert.alert('Success!', 'Images Uploaded');
-        // navigation.goBack();
         navigation.navigate('QR_codeScreen');
       }
     });

@@ -48,7 +48,7 @@ export const servicesProvided = [
   {
     category: 'Pharmacy services',
     icon: {type: 'MaterialIcons', name: 'local-pharmacy'},
-    subcategories: ['Over-the-counter medications', 'Health supplements'],
+    subcategories: ['Medications', 'Health supplements'],
   },
   {
     category: 'Customer support services',
