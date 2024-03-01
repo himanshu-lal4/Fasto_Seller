@@ -16,9 +16,9 @@ const SelectImage = ({setSelectOption}) => {
   const captureImage = () => {
     launchCamera({mediaType: 'photo'}, response => {
       if (response.didCancel) {
-        console.log('user cencil the action');
+        console.log('user cancel the action');
       } else if (response.errorCode) {
-        console.log(`Error while openig the gallery ${response.errorCode}`);
+        console.log(`Error while opening the gallery ${response.errorCode}`);
       } else if (response.errorMessage) {
         console.log(`error message is ${response.errorMessage}`);
       } else {
@@ -31,9 +31,9 @@ const SelectImage = ({setSelectOption}) => {
   const chooseFile = () => {
     launchImageLibrary({mediaType: 'photo', selectionLimit: 0}, response => {
       if (response.didCancel) {
-        console.log('user cencil the action');
+        console.log('user cancel the action');
       } else if (response.errorCode) {
-        console.log(`Error while openig the gallery ${response.errorCode}`);
+        console.log(`Error while opening the gallery ${response.errorCode}`);
       } else if (response.errorMessage) {
         console.log(`error message is ${response.errorMessage}`);
       } else {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   modal: {
     bottom: 0,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     height: height * 0.3,
     flexDirection: 'column',
     alignItems: 'center',

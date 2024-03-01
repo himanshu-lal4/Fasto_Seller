@@ -6,6 +6,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {COLORS} from '../assets/theme';
 import SubcategoryScreen from '../components/onBoarding/subCategory';
 import LoginWithEmail_Password from '../screens/LoginWithEmail_Password';
+import ChooseImgScreen from '../screens/ChooseImgScreen';
+import SelectImage from '../components/SelectImg';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +26,8 @@ const Authnavigation = () => {
           name="LoginWithEmail_Password"
           component={LoginWithEmail_Password}
         />
+        <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
+        <Stack.Screen name="SelectImage" component={SelectImage} />
       </Stack.Navigator>
     </>
   );

@@ -35,6 +35,7 @@ const SubcategoryScreen = ({route}) => {
     if (selectedSubcategories.length === 0) {
       Alert.alert('Attention', 'Please select at least one subcategory.');
     } else {
+      navigation.navigate('ChooseImgScreen');
       console.log('Selected Subcategories:', selectedSubcategories);
       // Do whatever you need with the selected subcategories here
     }
@@ -78,7 +79,10 @@ const SubcategoryScreen = ({route}) => {
           </View>
         </ScrollView>
       </View>
-      <View style={styles.buttonContainer}>
+      <View
+        style={{
+          alignItems: 'center',
+        }}>
         <Button tittle={'continue'} onPress={saveSelection} />
       </View>
     </SafeAreaView>
@@ -113,9 +117,5 @@ const styles = StyleSheet.create({
   selectedItem: {
     borderColor: COLORS.darkBlue,
     borderWidth: 2,
-  },
-  buttonContainer: {
-    alignItems: 'center',
-    marginTop: 20,
   },
 });
