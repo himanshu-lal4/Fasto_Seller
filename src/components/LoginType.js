@@ -1,11 +1,12 @@
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import React, {useEffect} from 'react';
+import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
-import MaterialCommunityIcons from '../utils/VectorIcon';
+import VectorIcon from '../assets/VectorIcon/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
 import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
+import featureFlag from './remoteConfig';
 import {
   GoogleSignin,
   statusCodes,
@@ -14,6 +15,7 @@ import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
 
 const LoginType = () => {
   const navigation = useNavigation();
+  const isAppleLoginEnabled = featureFlag();
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -70,57 +72,57 @@ const LoginType = () => {
   };
 
   return (
-    <View style={styles.authContainertext}>
-      <Card style={[styles.Card1, {backgroundColor: '#413945'}]}>
+    <View style={styles.cardContainer}>
+      <Card
+        style={[styles.Card1, {backgroundColor: COLORS.secondaryButtonColor}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => {
             facebookSignInHandle();
           }}>
-          <MaterialCommunityIcons
+          <VectorIcon
             name="facebook"
             size={50}
-            color="#0074f4"
+            color="#3b5998"
             style={{}}
             type="MaterialCommunityIcons"
           />
-          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-            Continue with Facebook
-          </Text>
         </TouchableOpacity>
       </Card>
-      <Card style={[styles.Card1, {backgroundColor: '#474f44'}]}>
+      <Card
+        style={[styles.Card1, {backgroundColor: COLORS.secondaryButtonColor}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => {
             googleSignInHandle();
           }}>
-          <MaterialCommunityIcons
-            name="google"
-            size={50}
-            color="white"
-            type="MaterialCommunityIcons"
+          <Image
+            style={{height: 50, width: 60}}
+            source={require('../assets/icons/Google.webp')}
           />
-          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-            Continue with Google
-          </Text>
         </TouchableOpacity>
       </Card>
-      <Card style={[styles.Card1, {backgroundColor: '#474f4f'}]}>
-        <TouchableOpacity
-          style={stylesPage.cardBox}
-          onPress={() => console.log('Google icon')}>
-          <MaterialCommunityIcons
-            name="apple"
-            size={50}
-            color="white"
-            type="MaterialCommunityIcons"
-          />
-          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-            Continue with Apple
-          </Text>
-        </TouchableOpacity>
-      </Card>
+
+      {isAppleLoginEnabled ? (
+        <>
+          <Card
+            style={[
+              styles.Card1,
+              {backgroundColor: COLORS.secondaryButtonColor},
+            ]}>
+            <TouchableOpacity
+              style={stylesPage.cardBox}
+              onPress={() => console.log('Apple icon')}>
+              <VectorIcon
+                name="apple"
+                size={50}
+                color="gray"
+                type="MaterialCommunityIcons"
+              />
+            </TouchableOpacity>
+          </Card>
+        </>
+      ) : null}
     </View>
   );
 };
