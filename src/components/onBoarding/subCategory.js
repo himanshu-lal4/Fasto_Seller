@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
   subcategoriesContainer: {
     marginTop: 25,
     flexDirection: 'column',
-    marginHorizontal: 15,
   },
   selectedItem: {
     borderColor: COLORS.darkBlue,

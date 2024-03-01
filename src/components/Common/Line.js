@@ -26,7 +26,7 @@ export default Line;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: '20%',
+    marginTop: '10%',
     marginBottom: '5%',
     flexDirection: 'row',
     marginHorizontal: SIZES.basemarginleft,
