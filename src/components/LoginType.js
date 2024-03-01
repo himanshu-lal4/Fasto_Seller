@@ -47,24 +47,26 @@ const LoginType = () => {
 
   //Facebook Sign In
   const facebookSignInHandle = async () => {
-    try {
-      const result = await LoginManager.logInWithPermissions([
-        'public_profile',
-      ]);
-      if (result.isCancelled) {
-        console.log('Login cancelled');
-      } else {
-        const data = await AccessToken.getCurrentAccessToken();
-        if (data) {
-          console.log(data.accessToken.toString());
-          navigation.navigate('OnBoardScreen');
-          console.log(data);
-          // Call onLoginFinished callback or perform further actions here
-        }
-      }
-    } catch (error) {
-      console.log('Login failed with error: ', error);
+    const result = await LoginManager.logInWithPermissions([
+      'public_profile',
+      'email',
+    ]);
+
+    if (result.isCancelled) {
+      console.log('User cancelled the login process');
     }
+
+    const data = await AccessToken.getCurrentAccessToken();
+
+    if (!data) {
+      throw 'Something went wrong obtaining access token';
+    }
+
+    const facebookCredential = auth.FacebookAuthProvider.credential(
+      data.accessToken,
+    );
+
+    return auth().signInWithCredential(facebookCredential);
   };
 
   return (

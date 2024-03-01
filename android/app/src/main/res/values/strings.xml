@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">fasto_seller</string>
-    <string name="facebook_app_id">2546288948885820</string>
+    <!-- <string name="facebook_app_id">2546288948885820</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
-    <string name="facebook_client_token">56789</string>
+    <string name="facebook_client_token">56789</string> -->
+    <string name="facebook_app_id">1134314534374459</string>
+    <string name="fb_login_protocol_scheme">fb1134314534374459</string>
+    <string name="facebook_client_token">c61a0bc4c821cd264cea773a544f81c1</string>
 </resources>
