@@ -7,20 +7,19 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-import AuthHeader from '../Common/AuthHeader';
 import {COLORS} from '../../assets/theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView} from 'react-native-virtualized-view';
 import {useNavigation} from '@react-navigation/native';
 import Button from '../Common/Button';
+import AuthHeader from '../Common/AuthHeader';
 
 const SubcategoryScreen = ({route}) => {
   const {subCategories} = route.params;
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const navigation = useNavigation();
 
-  // Function to handle checkbox toggle
+  // Function to handle subcategory selection
   const toggleSubcategory = subcategory => {
     if (selectedSubcategories.includes(subcategory)) {
       setSelectedSubcategories(
@@ -33,13 +32,14 @@ const SubcategoryScreen = ({route}) => {
 
   // Function to save the selected subcategories
   const saveSelection = () => {
-    if (selectedSubcategories.length == 0) {
+    if (selectedSubcategories.length === 0) {
       Alert.alert('Attention', 'Please select at least one subcategory.');
-      console.log('Selected Subcategories:', selectedSubcategories);
     } else {
-      console.log('Warning: Please select at least one subcategory.');
+      console.log('Selected Subcategories:', selectedSubcategories);
+      // Do whatever you need with the selected subcategories here
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <AuthHeader
@@ -52,22 +52,25 @@ const SubcategoryScreen = ({route}) => {
             <FlatList
               data={subCategories}
               renderItem={({item}) => (
-                <View style={styles.section}>
-                  <CheckBox
-                    tintColors={{true: COLORS.darkBlue, false: COLORS.darkBlue}}
-                    value={selectedSubcategories.includes(item)}
-                    onValueChange={() => toggleSubcategory(item)}
-                  />
-                  <Text
-                    style={{
-                      color: COLORS.darkBlue,
-                      fontSize: 14,
-                      paddingHorizontal: 8,
-                      fontWeight: 'bold',
-                    }}>
-                    {item}
-                  </Text>
-                </View>
+                <TouchableOpacity onPress={() => toggleSubcategory(item)}>
+                  <View
+                    style={[
+                      styles.section,
+                      selectedSubcategories.includes(item) &&
+                        styles.selectedItem,
+                    ]}>
+                    <Text
+                      style={{
+                        color: COLORS.darkBlue,
+                        fontSize: 14,
+                        textAlign: 'center',
+                        paddingHorizontal: 8,
+                        fontWeight: 'bold',
+                      }}>
+                      {item}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               )}
               keyExtractor={(item, index) => index.toString()}
               numColumns={2}
@@ -87,37 +90,32 @@ export default SubcategoryScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
   },
-
   section: {
-    display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-
-    boxSizing: 'border-box',
-    marginVertical: 10,
-    marginHorizontal: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 4,
+    margin: 10,
+    padding: 10,
     backgroundColor: COLORS.secondaryButtonColor,
     borderRadius: 50,
-    display: 'inline',
-    width: '45%',
   },
   subcategoryItems: {
-    display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginTop: 10,
-    width: '100%',
+    margin: 10,
   },
   subcategoriesContainer: {
     marginTop: 25,
-    display: 'flex',
-    flexWrap: 'wrap',
     flexDirection: 'column',
     marginHorizontal: 15,
+  },
+  selectedItem: {
+    borderColor: COLORS.darkBlue,
+    borderWidth: 2,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 20,
   },
 });
