@@ -12,8 +12,11 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
+import {useDispatch} from 'react-redux';
+import {addUID} from '../redux/userTokenSlice';
 
 const LoginType = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const isAppleLoginEnabled = featureFlag();
 
@@ -33,7 +36,11 @@ const LoginType = () => {
       if (idToken) {
         navigation.navigate('OnBoardScreen');
       }
-      return auth().signInWithCredential(googleCredential);
+      const {user} = await auth().signInWithCredential(googleCredential);
+      dispatch(addUID(user.uid));
+      return;
+
+      // return auth().signInWithCredential(googleCredential);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log('user canceil the login flow');
@@ -67,8 +74,9 @@ const LoginType = () => {
     const facebookCredential = auth.FacebookAuthProvider.credential(
       data.accessToken,
     );
-
-    return auth().signInWithCredential(facebookCredential);
+    const {user} = await auth().signInWithCredential(facebookCredential);
+    dispatch(addUID(user.uid));
+    return;
   };
 
   return (

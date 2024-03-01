@@ -24,6 +24,8 @@ import {
 } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import Line from '../components/Common/Line';
+import {useDispatch} from 'react-redux';
+import {addUID} from '../redux/userTokenSlice';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -35,6 +37,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const createUserWithEmailPassword = (email, password) => {
+  const dispatch = useDispatch();
   auth()
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
@@ -62,7 +65,9 @@ const LoginWithEmail_Password = () => {
       .then(userCredential => {
         // console.log('User loggesd in Successfully', userCredential);
         const userToken = userCredential.user.uid;
+
         if (userToken) {
+          dispatch(addUID(userToken));
           navigation.navigate('OnBoardScreen');
         }
       })

@@ -2,15 +2,21 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 // import VectorIcon from '../../utils/VectorIcon';
 import VectorIcon from '../assets/VectorIcon/VectorIcon';
+import {useSelector} from 'react-redux';
 
 const Qr_codeScreen = () => {
+  const userToken = useSelector(state => state.userToken.UID);
+  console.log('🚀 ~ userToken:', userToken);
+
   const [text, setText] = useState('');
   const [QRImage, setQRImage] = useState('');
   const ref = useRef();
-
+  useEffect(() => {
+    setText(userToken);
+  }, [userToken]);
   const saveQR = () => {
     try {
       ref.current.toDataURL(async data => {
