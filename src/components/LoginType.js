@@ -97,7 +97,7 @@ const LoginType = () => {
             googleSignInHandle();
           }}>
           <Image
-            style={{height: 50, width: 60}}
+            style={{height: 50, width: 53}}
             source={require('../assets/icons/Google.webp')}
           />
         </TouchableOpacity>

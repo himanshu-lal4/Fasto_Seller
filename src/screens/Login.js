@@ -58,11 +58,6 @@ const Login = () => {
                     }),
                   },
                 ],
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
               },
             ]}>
             <LoginType />

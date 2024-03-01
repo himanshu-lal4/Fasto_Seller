@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   Card1: {
     // borderWidth: 1, // not looking good so i commented it out
     elevation: 10,
-    padding: 10,
+    padding: 15,
     marginTop: 20,
     justifyContent: 'center',
     borderRadius: 20,

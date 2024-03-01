@@ -5,7 +5,7 @@ import {registerNotifee} from './src/components/SendNotification';
 const App = () => {
   //setup notification
   useEffect(() => {
-    registerNotifee();
+    <registerNotifee/>;
   }, []);
 
   return <Index />;

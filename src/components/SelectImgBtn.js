@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import {COLORS} from '../assets/theme';
 
 export default function SelectImgBtn({
   text,
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
   btn: {
     alignItems: 'center',
     textAlign: 'center',
-    backgroundColor: '#272727',
+    backgroundColor: COLORS.darkBlue,
     borderWidth: 2,
     borderRadius: 28,
     borderColor: 'white',
@@ -48,7 +49,6 @@ const styles = StyleSheet.create({
     color: 'white',
     padding: 16,
     paddingHorizontal: 59,
-    fontFamily: 'Poppins-Bold',
     fontSize: 15,
   },
   btn2: {

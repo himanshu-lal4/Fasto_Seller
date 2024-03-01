@@ -1,17 +1,32 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
   Dimensions,
   Text,
+  Animated,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {BlurView} from '@react-native-community/blur';
 import SelectImgBtn from './SelectImgBtn';
+import {COLORS, FONTS} from '../assets/theme';
+import {useNavigation} from '@react-navigation/native';
 const height = Dimensions.get('window').height;
 
-const SelectImage = ({setSelectOption}) => {
+const SelectImage = ({handleSelectOption}) => {
+  const navigation = useNavigation();
+  const [modalAnimation] = useState(new Animated.Value(height));
+
+  useEffect(() => {
+    Animated.timing(modalAnimation, {
+      toValue: height * 0.6,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   //capture Image from Camera
   const captureImage = () => {
     launchCamera({mediaType: 'photo'}, response => {
@@ -23,6 +38,8 @@ const SelectImage = ({setSelectOption}) => {
         console.log(`error message is ${response.errorMessage}`);
       } else {
         console.log(response.assets[0].uri);
+        Alert.alert('Success!', 'Image Uploaded');
+        navigation.goBack();
       }
     });
   };
@@ -38,12 +55,14 @@ const SelectImage = ({setSelectOption}) => {
         console.log(`error message is ${response.errorMessage}`);
       } else {
         console.log(response);
+        Alert.alert('Success!', 'Images Uploaded');
+        navigation.goBack();
       }
     });
   };
   return (
     <>
-      <TouchableWithoutFeedback onPress={() => setSelectOption(false)}>
+      <TouchableWithoutFeedback onPress={() => handleSelectOption(false)}>
         <BlurView
           style={styles.blurView}
           blurType="dark"
@@ -52,8 +71,12 @@ const SelectImage = ({setSelectOption}) => {
           reducedTransparencyFallbackColor="white"
         />
       </TouchableWithoutFeedback>
-      <View style={styles.modal}>
-        <Text style={styles.text1}>Select Option</Text>
+
+      <Animated.View
+        style={[styles.modal, {transform: [{translateY: modalAnimation}]}]}>
+        <Text style={[FONTS.h3, {color: COLORS.black, marginTop: 20}]}>
+          Select a Option
+        </Text>
         <View style={styles.twobtns}>
           <SelectImgBtn
             text={'Camera'}
@@ -66,7 +89,7 @@ const SelectImage = ({setSelectOption}) => {
             onPress={() => chooseFile('photo')}
           />
         </View>
-      </View>
+      </Animated.View>
     </>
   );
 };
@@ -80,19 +103,18 @@ const styles = StyleSheet.create({
     right: 0,
   },
   modal: {
-    bottom: 0,
     backgroundColor: 'white',
-    height: height * 0.3,
+    height: height * 0.8,
     flexDirection: 'column',
     alignItems: 'center',
     borderTopLeftRadius: 33,
     borderTopRightRadius: 33,
     paddingTop: height / 35,
-    marginTop: height - 250,
+    marginTop: height - 1050,
   },
   text1: {
     fontSize: height / 35,
-    color: '#FAFAF8',
+    color: COLORS.black,
     textAlign: 'center',
   },
   text2: {
