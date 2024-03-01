@@ -1,9 +1,10 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
 import React, {useRef, useState} from 'react';
-import VectorIcon from '../../utils/VectorIcon';
+// import VectorIcon from '../../utils/VectorIcon';
+import VectorIcon from '../assets/VectorIcon/VectorIcon';
 
 const Qr_codeScreen = () => {
   const [text, setText] = useState('');
@@ -13,7 +14,6 @@ const Qr_codeScreen = () => {
   const saveQR = () => {
     try {
       ref.current.toDataURL(async data => {
-        // console.log(data);       //give 64base URL
         const path =
           RNFetchBlob.fs.dirs.DownloadDir + `/${text.slice(0, 30)}.png`;
         console.log(path);
@@ -37,15 +37,17 @@ const Qr_codeScreen = () => {
     }
   };
   return (
-    <View>
-      <Text>Qr_codeScreen</Text>
-      <TouchableOpacity onPress={() => saveQR()}>
-        <Text style={styles.btn}>Download QR</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => handleShare()}>
-        <Text style={styles.btn}>Share QR</Text>
-      </TouchableOpacity>
-      <View style={{alignSelf: 'center', marginTop: 50}}>
+    <View style={{marginTop: 20}}>
+      <View style={styles.section}>
+        <TouchableOpacity onPress={() => saveQR()}>
+          <VectorIcon name="download" type="feather" color="black" size={50} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleShare()}>
+          <VectorIcon name="share" type="feather" color="black" size={50} />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{alignSelf: 'center', marginTop: '40%'}}>
         <QRCode value={text ? text : 'NA'} size={300} getRef={ref} />
       </View>
     </View>
@@ -65,5 +67,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'purple',
     color: 'white',
     marginBottom: 20,
+  },
+  section: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
 });

@@ -39,7 +39,8 @@ const SelectImage = ({handleSelectOption}) => {
       } else {
         console.log(response.assets[0].uri);
         Alert.alert('Success!', 'Image Uploaded');
-        navigation.goBack();
+        // navigation.goBack();
+        navigation.navigate('QR_codeScreen');
       }
     });
   };
@@ -56,7 +57,8 @@ const SelectImage = ({handleSelectOption}) => {
       } else {
         console.log(response);
         Alert.alert('Success!', 'Images Uploaded');
-        navigation.goBack();
+        // navigation.goBack();
+        navigation.navigate('QR_codeScreen');
       }
     });
   };

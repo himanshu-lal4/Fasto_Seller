@@ -8,6 +8,7 @@ import SubcategoryScreen from '../components/onBoarding/subCategory';
 import LoginWithEmail_Password from '../screens/LoginWithEmail_Password';
 import ChooseImgScreen from '../screens/ChooseImgScreen';
 import SelectImage from '../components/SelectImg';
+import Qr_codeScreen from '../screens/Qr_codeScreen';
 
 const Stack = createStackNavigator();
 
@@ -27,7 +28,7 @@ const Authnavigation = () => {
           component={LoginWithEmail_Password}
         />
         <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
-        <Stack.Screen name="SelectImage" component={SelectImage} />
+        <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
       </Stack.Navigator>
     </>
   );
