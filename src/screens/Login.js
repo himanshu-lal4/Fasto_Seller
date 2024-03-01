@@ -15,8 +15,9 @@ import LoginType from '../components/LoginType';
 import {COLORS, FONTS, SIZES, theme} from '../assets/theme';
 import Button from '../components/Common/Button';
 import Line from '../components/Common/Line';
-
+import {useDispatch} from 'react-redux';
 const Login = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const slideUpAnim = useRef(new Animated.Value(0)).current;
 
