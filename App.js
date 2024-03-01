@@ -1,11 +1,20 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import Index from './src/navigation/Index'
+import React, {useEffect} from 'react';
+import Index from './src/navigation/Index';
+import {registerNotifee} from './src/components/SendNotification';
+import store from './src/redux/store';
+import {Provider} from 'react-redux';
 
 const App = () => {
-  return (
-    <Index />
-  )
-}
+  //setup notification
+  useEffect(() => {
+    <registerNotifee />;
+  }, []);
 
-export default App
+  return (
+    <Provider store={store}>
+      <Index />
+    </Provider>
+  );
+};
+
+export default App;

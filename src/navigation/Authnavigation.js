@@ -6,15 +6,17 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {COLORS} from '../assets/theme';
 import SubcategoryScreen from '../components/onBoarding/subCategory';
 import LoginWithEmail_Password from '../screens/LoginWithEmail_Password';
+import ChooseImgScreen from '../screens/ChooseImgScreen';
+import SelectImage from '../components/SelectImg';
+import Qr_codeScreen from '../screens/Qr_codeScreen';
 
 const Stack = createStackNavigator();
 
 const Authnavigation = () => {
   return (
     <>
-      <StatusBar backgroundColor={COLORS.primaryBackgroundColor} />
+      <StatusBar barStyle={'light-content'} backgroundColor={COLORS.darkBlue} />
       <Stack.Navigator
-        initialRouteName="Login"
         screenOptions={{
           headerShown: false,
         }}>
@@ -25,6 +27,8 @@ const Authnavigation = () => {
           name="LoginWithEmail_Password"
           component={LoginWithEmail_Password}
         />
+        <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
+        <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
       </Stack.Navigator>
     </>
   );

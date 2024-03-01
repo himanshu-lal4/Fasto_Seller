@@ -1,49 +1,92 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
   Dimensions,
   Text,
+  Animated,
   TouchableWithoutFeedback,
+  Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import {BlurView} from '@react-native-community/blur';
 import SelectImgBtn from './SelectImgBtn';
+import {COLORS, FONTS} from '../assets/theme';
+import {useNavigation} from '@react-navigation/native';
 const height = Dimensions.get('window').height;
 
-const SelectImage = ({setSelectOption}) => {
+const SelectImage = ({handleSelectOption}) => {
+  const navigation = useNavigation();
+  const [modalAnimation] = useState(new Animated.Value(height));
+
+  useEffect(() => {
+    Animated.timing(modalAnimation, {
+      toValue: height * 0.6,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   //capture Image from Camera
-  const captureImage = () => {
-    launchCamera({mediaType: 'photo'}, response => {
-      if (response.didCancel) {
-        console.log('user cencil the action');
-      } else if (response.errorCode) {
-        console.log(`Error while openig the gallery ${response.errorCode}`);
-      } else if (response.errorMessage) {
-        console.log(`error message is ${response.errorMessage}`);
+  const captureImage = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'This app needs access to your camera.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        launchCamera({mediaType: 'photo'}, response => {
+          if (response.didCancel) {
+            console.log('User canceled the action');
+          } else if (response.errorCode) {
+            console.log(`Error while opening the Camera ${response.errorCode}`);
+          } else if (response.errorMessage) {
+            console.log(`Error message is ${response.errorMessage}`);
+          } else {
+            console.log(response.assets[0].uri);
+            Alert.alert('Success!', 'Image Uploaded');
+            navigation.navigate('QR_codeScreen');
+          }
+        });
       } else {
-        console.log(response.assets[0].uri);
+        console.log('Camera permission denied');
+        Alert.alert(
+          'Permission Denied',
+          'You need to grant camera permission to use this feature.',
+        );
       }
-    });
+    } catch (err) {
+      console.warn(err);
+    }
   };
 
   //select Image from gallery
   const chooseFile = () => {
-    launchImageLibrary({mediaType: 'photo', selectionLimit: 0}, response => {
+    launchImageLibrary({mediaType: 'photo', selectionLimit: 10}, response => {
       if (response.didCancel) {
-        console.log('user cencil the action');
+        console.log('user cancel the action');
       } else if (response.errorCode) {
-        console.log(`Error while openig the gallery ${response.errorCode}`);
+        console.log(`Error while opening the gallery ${response.errorCode}`);
       } else if (response.errorMessage) {
         console.log(`error message is ${response.errorMessage}`);
       } else {
         console.log(response);
+        Alert.alert('Success!', 'Images Uploaded');
+        navigation.navigate('QR_codeScreen');
       }
     });
   };
   return (
     <>
-      <TouchableWithoutFeedback onPress={() => setSelectOption(false)}>
+      <TouchableWithoutFeedback onPress={() => handleSelectOption(false)}>
         <BlurView
           style={styles.blurView}
           blurType="dark"
@@ -52,8 +95,12 @@ const SelectImage = ({setSelectOption}) => {
           reducedTransparencyFallbackColor="white"
         />
       </TouchableWithoutFeedback>
-      <View style={styles.modal}>
-        <Text style={styles.text1}>Select Option</Text>
+
+      <Animated.View
+        style={[styles.modal, {transform: [{translateY: modalAnimation}]}]}>
+        <Text style={[FONTS.h3, {color: COLORS.black, marginTop: 20}]}>
+          Select a Option
+        </Text>
         <View style={styles.twobtns}>
           <SelectImgBtn
             text={'Camera'}
@@ -66,7 +113,7 @@ const SelectImage = ({setSelectOption}) => {
             onPress={() => chooseFile('photo')}
           />
         </View>
-      </View>
+      </Animated.View>
     </>
   );
 };
@@ -80,19 +127,18 @@ const styles = StyleSheet.create({
     right: 0,
   },
   modal: {
-    bottom: 0,
-    backgroundColor: 'black',
-    height: height * 0.3,
+    backgroundColor: 'white',
+    height: height * 0.8,
     flexDirection: 'column',
     alignItems: 'center',
     borderTopLeftRadius: 33,
     borderTopRightRadius: 33,
     paddingTop: height / 35,
-    marginTop: height - 250,
+    marginTop: height - 1050,
   },
   text1: {
     fontSize: height / 35,
-    color: '#FAFAF8',
+    color: COLORS.black,
     textAlign: 'center',
   },
   text2: {

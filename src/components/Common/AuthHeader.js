@@ -13,7 +13,7 @@ const AuthHeader = ({tittle, onPress}) => {
         name="arrow-back"
         type="Ionicons"
         size={24}
-        color={COLORS.white}
+        color={COLORS.black}
         onPress={onPress}
       />
       <Text style={styles.authContainertext}>{tittle}</Text>

@@ -16,9 +16,7 @@ const Button = ({onPress, tittle}) => {
         onPress={() => {
           onPress();
         }}>
-        <Text style={[FONTS.body4, {color: COLORS.black, fontWeight: '700'}]}>
-          {tittle}
-        </Text>
+        <Text style={[FONTS.h3, {color: COLORS.white}]}>{tittle}</Text>
       </TouchableOpacity>
     </View>
   );

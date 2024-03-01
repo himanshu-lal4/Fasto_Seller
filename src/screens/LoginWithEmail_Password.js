@@ -4,14 +4,13 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import InputText from '../components/Common/InputText';
 import Button from '../components/Common/Button';
-import Icons from 'react-native-vector-icons/Ionicons';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
 import {COLORS, FONTS} from '../assets/theme';
@@ -23,7 +22,10 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 import Line from '../components/Common/Line';
+import {useDispatch} from 'react-redux';
+import {addUID} from '../redux/userTokenSlice';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
@@ -34,60 +36,52 @@ const validationSchema = Yup.object().shape({
     .min(6, 'Password must be at least 6 characters'),
 });
 
+const createUserWithEmailPassword = (email, password) => {
+  const dispatch = useDispatch();
+  auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      console.log('User account created & signed in!');
+    })
+    .catch(error => {
+      if (error.code === 'auth/email-already-in-use') {
+        console.log('That email address is already in use!');
+        Alert.alert('This email is already in use');
+      }
+
+      if (error.code === 'auth/invalid-email') {
+        console.log('That email address is invalid!');
+      }
+    });
+};
+
 const LoginWithEmail_Password = () => {
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
+
+  const signInUser = (email, password) => {
+    auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        // console.log('User loggesd in Successfully', userCredential);
+        const userToken = userCredential.user.uid;
+
+        if (userToken) {
+          dispatch(addUID(userToken));
+          navigation.navigate('OnBoardScreen');
+        }
+      })
+      .catch(error => {
+        console.log('error while login ' + error);
+      });
+  };
+
   const handleSubmit = (values, actions) => {
     if (values) {
-      console.log(values);
-      navigation.navigate('OnBoardScreen');
+      // console.log(values);
+      // createUserWithEmailPassword(values.email, values.password);
+      signInUser(values.email, values.password);
       actions.resetForm();
-    }
-  };
-
-  //google Sign In
-  const googleSignInHandle = async () => {
-    try {
-      await GoogleSignin.configure();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-      if (userInfo.length !== 0) {
-        navigation.navigate('OnBoardScreen');
-        console.log('Atishay');
-      }
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-      } else {
-        // some other error happened
-        console.log(error);
-      }
-    }
-  };
-
-  //Facebook Sign In
-  const facebookSignInHandle = async () => {
-    try {
-      const result = await LoginManager.logInWithPermissions([
-        'public_profile',
-      ]);
-      if (result.isCancelled) {
-        console.log('Login cancelled');
-      } else {
-        const data = await AccessToken.getCurrentAccessToken();
-        if (data) {
-          console.log(data.accessToken.toString());
-          navigation.navigate('OnBoardScreen');
-          console.log(data);
-          // Call onLoginFinished callback or perform further actions here
-        }
-      }
-    } catch (error) {
-      console.log('Login failed with error: ', error);
     }
   };
 
@@ -110,7 +104,7 @@ const LoginWithEmail_Password = () => {
               onSubmit={handleSubmit}>
               {({handleChange, handleSubmit, values, errors, touched}) => (
                 <View>
-                  <View style={{height: 90}}>
+                  <View>
                     <InputText
                       value={values.email}
                       placeholder="Email"
@@ -120,11 +114,12 @@ const LoginWithEmail_Password = () => {
                       <Text style={styles.errorText}>{errors.email}</Text>
                     )}
                   </View>
-                  <View style={{height: 90}}>
+                  <View>
                     <InputText
                       value={values.password}
                       placeholder="Password"
                       onChangeText={handleChange('password')}
+                      style={{height: 50}}
                       secure={true}
                     />
                     {touched.password && errors.password && (
@@ -133,67 +128,34 @@ const LoginWithEmail_Password = () => {
                   </View>
 
                   <View style={styles.checkboxContainer}>
-                    <Checkbox
-                      status={checked ? 'checked' : 'unchecked'}
-                      onPress={() => {
-                        setChecked(!checked);
-                      }}
-                    />
-                    <Text style={styles.label}>Remember me</Text>
+                    <View
+                      style={{flexDirection: 'row', justifyContent: 'center'}}>
+                      <Checkbox
+                        color="#0a57fd"
+                        status={checked ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                          setChecked(!checked);
+                        }}
+                      />
+                      <Text style={styles.label}>Remember me</Text>
+                    </View>
+
                     <TouchableOpacity>
                       <Text style={styles.reset}>Reset Password</Text>
                     </TouchableOpacity>
                   </View>
-                  <Button
-                    color="#ee1c24"
-                    tittle="SIGN IN"
-                    onPress={handleSubmit}
-                  />
+
+                  <Button tittle="sign in" onPress={() => handleSubmit()} />
                 </View>
               )}
             </Formik>
           </View>
-          <Line
-            customStyle={styles.line}
-            text="or continue with"
-            line1Width={'34%'}
-            line2Width={'34%'}
-          />
-          <View style={styles.icons}>
-            <TouchableOpacity
-              TouchableOpacity={0.7}
-              onPress={googleSignInHandle}>
-              <View style={styles.google}>
-                <Image
-                  style={styles.googleIcon}
-                  source={require('../assets/icons/Google.webp')}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              TouchableOpacity={0.7}
-              onPress={facebookSignInHandle}>
-              <Icons
-                style={styles.icon}
-                name="logo-facebook"
-                size={32}
-                color={'#0074f4'}
-              />
-            </TouchableOpacity>
-            <Icons
-              style={styles.icon}
-              name="logo-apple"
-              size={32}
-              color={COLORS.white1}
-            />
-          </View>
-
           <View style={styles.bottomView}>
-            <Text style={[FONTS.body4, {color: COLORS.white1}]}>
+            <Text style={[FONTS.body4, {color: COLORS.black}]}>
               Don't have an account?
             </Text>
             <Text
-              style={[FONTS.body4, {color: '#008fb3', marginLeft: 5}]}
+              style={[FONTS.body4, {color: COLORS.blue, marginLeft: 5}]}
               onPress={() => {}}>
               Sign up
             </Text>
@@ -208,20 +170,21 @@ export default LoginWithEmail_Password;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#202020',
+    backgroundColor: 'white',
   },
   checkboxContainer: {
-    display: 'flex',
+    width: '100%',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     marginHorizontal: 20,
     marginTop: 30,
   },
   line: {marginTop: '20%', marginBottom: '2%'},
   label: {
-    color: COLORS.white,
+    color: COLORS.black,
     marginTop: 6,
   },
-  reset: {color: '#008fb3', marginLeft: '30%', marginTop: 7},
+  reset: {color: COLORS.darkBlue, marginLeft: '30%', marginTop: 7},
   google: {
     paddingHorizontal: 20,
     paddingVertical: 5,

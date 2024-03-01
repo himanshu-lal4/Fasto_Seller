@@ -7,19 +7,19 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-import AuthHeader from '../Common/AuthHeader';
 import {COLORS} from '../../assets/theme';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ScrollView} from 'react-native-virtualized-view';
 import {useNavigation} from '@react-navigation/native';
+import Button from '../Common/Button';
+import AuthHeader from '../Common/AuthHeader';
 
 const SubcategoryScreen = ({route}) => {
   const {subCategories} = route.params;
   const [selectedSubcategories, setSelectedSubcategories] = useState([]);
   const navigation = useNavigation();
 
-  // Function to handle checkbox toggle
+  // Function to handle subcategory selection
   const toggleSubcategory = subcategory => {
     if (selectedSubcategories.includes(subcategory)) {
       setSelectedSubcategories(
@@ -32,48 +32,58 @@ const SubcategoryScreen = ({route}) => {
 
   // Function to save the selected subcategories
   const saveSelection = () => {
-    if (selectedSubcategories.length == 0) {
+    if (selectedSubcategories.length === 0) {
       Alert.alert('Attention', 'Please select at least one subcategory.');
-      console.log('Selected Subcategories:', selectedSubcategories);
     } else {
-      console.log('Warning: Please select at least one subcategory.');
+      navigation.navigate('ChooseImgScreen');
+      console.log('Selected Subcategories:', selectedSubcategories);
+      // Do whatever you need with the selected subcategories here
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <AuthHeader
         tittle={'SELECT A CATEGORY'}
         onPress={() => navigation.goBack()}
       />
-      <View style={{marginVertical: 25}}>
+      <View style={styles.subcategoriesContainer}>
         <ScrollView>
-          <FlatList
-            data={subCategories}
-            renderItem={({item}) => (
-              <View style={styles.section}>
-                <CheckBox
-                  tintColors={{true: COLORS.white, false: 'white'}}
-                  value={selectedSubcategories.includes(item)}
-                  onValueChange={() => toggleSubcategory(item)}
-                />
-                <Text
-                  style={{
-                    color: COLORS.white,
-                    fontSize: 18,
-                    paddingHorizontal: 10,
-                  }}>
-                  {item}
-                </Text>
-              </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
+          <View style={styles.subcategoryItems}>
+            <FlatList
+              data={subCategories}
+              renderItem={({item}) => (
+                <TouchableOpacity onPress={() => toggleSubcategory(item)}>
+                  <View
+                    style={[
+                      styles.section,
+                      selectedSubcategories.includes(item) &&
+                        styles.selectedItem,
+                    ]}>
+                    <Text
+                      style={{
+                        color: COLORS.darkBlue,
+                        fontSize: 14,
+                        textAlign: 'center',
+                        paddingHorizontal: 8,
+                        fontWeight: 'bold',
+                      }}>
+                      {item}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              numColumns={2}
+            />
+          </View>
         </ScrollView>
-        <TouchableOpacity onPress={saveSelection} style={styles.button}>
-          <Text style={{fontWeight: '600', color: 'black'}}>
-            Save Selection
-          </Text>
-        </TouchableOpacity>
+      </View>
+      <View
+        style={{
+          alignItems: 'center',
+        }}>
+        <Button tittle={'continue'} onPress={saveSelection} />
       </View>
     </SafeAreaView>
   );
@@ -84,26 +94,27 @@ export default SubcategoryScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#202020',
-    justifyContent: 'flex-start',
-  },
-  button: {
-    height: 45,
-    backgroundColor: '#89b9ff',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '90%',
-    alignSelf: 'center',
-    marginTop: 10,
   },
   section: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5,
-    marginHorizontal: 10,
-    padding: 15,
-    backgroundColor: '#082e66',
-    borderRadius: 8,
+    margin: 10,
+    padding: 10,
+    backgroundColor: COLORS.secondaryButtonColor,
+    borderRadius: 50,
+  },
+  subcategoryItems: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    margin: 10,
+  },
+  subcategoriesContainer: {
+    marginTop: 25,
+    flexDirection: 'column',
+  },
+  selectedItem: {
+    borderColor: COLORS.darkBlue,
+    borderWidth: 2,
   },
 });

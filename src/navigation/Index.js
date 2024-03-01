@@ -1,29 +1,27 @@
-import React from 'react'
-import Login from '../screens/Login';
-import { StatusBar } from 'react-native'
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
+import {StatusBar} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 import StartUpScreen from '../screens/StartUpScreen';
 import Authnavigation from './Authnavigation';
-import { COLORS } from '../assets/theme';
+import {COLORS} from '../assets/theme';
 
 const Stack = createStackNavigator();
 
 const Index = () => {
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor={COLORS.primaryBackgroundColor} />
+      <StatusBar barStyle={'light-content'} backgroundColor={COLORS.blue} />
       <Stack.Navigator
-        initialRouteName='StartUpScreen'
+        initialRouteName="StartUpScreen"
         screenOptions={{
-          headerShown: false
+          headerShown: false,
         }}>
-        <Stack.Screen name='StartUpScreen' component={StartUpScreen} />
-        <Stack.Screen name='Auth' component={Authnavigation} />
-       
+        <Stack.Screen name="StartUpScreen" component={StartUpScreen} />
+        <Stack.Screen name="Auth" component={Authnavigation} />
       </Stack.Navigator>
     </NavigationContainer>
-  )
-}
+  );
+};
 
-export default Index
+export default Index;

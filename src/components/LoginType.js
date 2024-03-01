@@ -1,9 +1,10 @@
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
-import MaterialCommunityIcons from '../utils/VectorIcon';
+import VectorIcon from '../assets/VectorIcon/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
+import auth from '@react-native-firebase/auth';
 import {useNavigation} from '@react-navigation/native';
 import featureFlag from './remoteConfig';
 import {
@@ -11,39 +12,43 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
+import {useDispatch} from 'react-redux';
+import {addUID} from '../redux/userTokenSlice';
 
 const LoginType = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const isAppleLoginEnabled = featureFlag();
-  
 
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        '843686181066-b0crro208ejatlau4vc52ohapmg4v12f.apps.googleusercontent.com',
-      client_type: 3,
-      offlineAccess: true,
+        '750688566312-2s51gk33qf9ju5e3mfied01npk0ho5eg.apps.googleusercontent.com',
     });
   }, []);
 
   //google Sign In
   const googleSignInHandle = async () => {
     try {
-      await GoogleSignin.configure();
-      const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo);
-      if (userInfo.length !== 0) {
+      await GoogleSignin.hasPlayServices();
+      const {idToken} = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      if (idToken) {
         navigation.navigate('OnBoardScreen');
       }
+      const {user} = await auth().signInWithCredential(googleCredential);
+      dispatch(addUID(user.uid));
+      return;
+
+      // return auth().signInWithCredential(googleCredential);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
+        console.log('user canceil the login flow');
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (e.g. sign in) is in progress already
+        console.log('google sign in is in progress');
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
+        console.log('play services not avaliable or outdated');
       } else {
-        // some other error happened
         console.log(error);
       }
     }
@@ -51,80 +56,77 @@ const LoginType = () => {
 
   //Facebook Sign In
   const facebookSignInHandle = async () => {
-    try {
-      const result = await LoginManager.logInWithPermissions([
-        'public_profile',
-      ]);
-      if (result.isCancelled) {
-        console.log('Login cancelled');
-      } else {
-        const data = await AccessToken.getCurrentAccessToken();
-        if (data) {
-          console.log(data.accessToken.toString());
-          navigation.navigate('OnBoardScreen');
-          console.log(data);
-          // Call onLoginFinished callback or perform further actions here
-        }
-      }
-    } catch (error) {
-      console.log('Login failed with error: ', error);
+    const result = await LoginManager.logInWithPermissions([
+      'public_profile',
+      'email',
+    ]);
+
+    if (result.isCancelled) {
+      console.log('User cancelled the login process');
     }
+
+    const data = await AccessToken.getCurrentAccessToken();
+
+    if (!data) {
+      throw 'Something went wrong obtaining access token';
+    }
+
+    const facebookCredential = auth.FacebookAuthProvider.credential(
+      data.accessToken,
+    );
+    const {user} = await auth().signInWithCredential(facebookCredential);
+    dispatch(addUID(user.uid));
+    return;
   };
 
   return (
-    <View style={styles.authContainertext}>
-      <Card style={[styles.Card1, {backgroundColor: '#413945'}]}>
+    <View style={styles.cardContainer}>
+      <Card
+        style={[styles.Card1, {backgroundColor: COLORS.secondaryButtonColor}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => {
             facebookSignInHandle();
           }}>
-          <MaterialCommunityIcons
+          <VectorIcon
             name="facebook"
             size={50}
-            color="#0074f4"
+            color="#3b5998"
             style={{}}
             type="MaterialCommunityIcons"
           />
-          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-            Continue with Facebook
-          </Text>
         </TouchableOpacity>
       </Card>
-      <Card style={[styles.Card1, {backgroundColor: '#474f44'}]}>
+      <Card
+        style={[styles.Card1, {backgroundColor: COLORS.secondaryButtonColor}]}>
         <TouchableOpacity
           style={stylesPage.cardBox}
           onPress={() => {
             googleSignInHandle();
           }}>
-          <MaterialCommunityIcons
-            name="google"
-            size={50}
-            color="white"
-            type="MaterialCommunityIcons"
+          <Image
+            style={{height: 50, width: 53}}
+            source={require('../assets/icons/Google.webp')}
           />
-          <Text style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-            Continue with Google
-          </Text>
         </TouchableOpacity>
       </Card>
 
       {isAppleLoginEnabled ? (
         <>
-          <Card style={[styles.Card1, {backgroundColor: '#474f4f'}]}>
+          <Card
+            style={[
+              styles.Card1,
+              {backgroundColor: COLORS.secondaryButtonColor},
+            ]}>
             <TouchableOpacity
               style={stylesPage.cardBox}
               onPress={() => console.log('Apple icon')}>
-              <MaterialCommunityIcons
+              <VectorIcon
                 name="apple"
                 size={50}
-                color="white"
+                color="gray"
                 type="MaterialCommunityIcons"
               />
-              <Text
-                style={[FONTS.body2, {color: COLORS.white1, paddingLeft: 20}]}>
-                Continue with Apple
-              </Text>
             </TouchableOpacity>
           </Card>
         </>
