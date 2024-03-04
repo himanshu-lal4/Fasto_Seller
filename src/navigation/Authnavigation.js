@@ -9,10 +9,26 @@ import LoginWithEmail_Password from '../screens/LoginWithEmail_Password';
 import ChooseImgScreen from '../screens/ChooseImgScreen';
 import SelectImage from '../components/SelectImg';
 import Qr_codeScreen from '../screens/Qr_codeScreen';
-
+import auth from '@react-native-firebase/auth';
+import {useEffect} from 'react';
+import {useState} from 'react';
 const Stack = createStackNavigator();
 
 const Authnavigation = () => {
+  const [user, setUser] = useState('');
+
+  useEffect(() => {
+    const unregister = auth().onAuthStateChanged(userExist => {
+      if (userExist) {
+        setUser(userExist);
+      } else {
+        setUser('');
+      }
+    });
+    return () => {
+      unregister();
+    };
+  }, []);
   return (
     <>
       <StatusBar barStyle={'light-content'} backgroundColor={COLORS.darkBlue} />
@@ -20,15 +36,25 @@ const Authnavigation = () => {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
-        <Stack.Screen name="SubcategoryScreen" component={SubcategoryScreen} />
-        <Stack.Screen
-          name="LoginWithEmail_Password"
-          component={LoginWithEmail_Password}
-        />
-        <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
-        <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
+        {user ? (
+          <>
+            <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
+            <Stack.Screen
+              name="SubcategoryScreen"
+              component={SubcategoryScreen}
+            />
+            <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
+            <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen
+              name="LoginWithEmail_Password"
+              component={LoginWithEmail_Password}
+            />
+          </>
+        )}
       </Stack.Navigator>
     </>
   );
