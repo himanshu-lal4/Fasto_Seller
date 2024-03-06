@@ -37,7 +37,6 @@ const validationSchema = Yup.object().shape({
 });
 
 const createUserWithEmailPassword = (email, password) => {
-  const dispatch = useDispatch();
   auth()
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
@@ -56,6 +55,7 @@ const createUserWithEmailPassword = (email, password) => {
 };
 
 const LoginWithEmail_Password = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [checked, setChecked] = useState(false);
 
