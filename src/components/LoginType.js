@@ -69,7 +69,6 @@ const LoginType = () => {
       const {user} = await auth().signInWithCredential(googleCredential);
       if (user) {
         dispatch(addUID(user.uid));
-        navigation.navigate('OnBoardScreen');
         saveDataToFirebase(user);
         saveTokenToFirebase(user);
       }
@@ -112,7 +111,6 @@ const LoginType = () => {
     const {user} = await auth().signInWithCredential(facebookCredential);
     if (user) {
       dispatch(addUID(user.uid));
-      navigation.navigate('OnBoardScreen');
       saveDataToFirebase(user);
       saveTokenToFirebase(user);
     }

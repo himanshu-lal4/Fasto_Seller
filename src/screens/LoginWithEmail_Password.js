@@ -68,7 +68,6 @@ const LoginWithEmail_Password = () => {
 
         if (userToken) {
           dispatch(addUID(userToken));
-          navigation.navigate('OnBoardScreen');
         }
       })
       .catch(error => {

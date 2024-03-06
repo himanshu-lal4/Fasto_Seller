@@ -101,12 +101,14 @@ const Qr_codeScreen = () => {
           style={{
             color: COLORS.darkBlue,
             fontSize: 18,
+            textAlign: 'center',
             // fontFamily: FONTS.body2,
           }}>
-          Hloo seller Here's your QrCode
+          Hello seller! Here's your QR code.
         </Text>
-        <Text style={{color: COLORS.darkBlue, fontSize: 18}}>
-          Scan further to see more
+        <Text
+          style={{color: COLORS.darkBlue, fontSize: 18, textAlign: 'center'}}>
+          Scan further to see more!
         </Text>
       </View>
 
@@ -142,13 +144,13 @@ const styles = StyleSheet.create({
   section: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 80,
-    paddingHorizontal: 22,
+    alignItems: 'center',
+    marginTop: 30,
+    paddingHorizontal: 20,
   },
   section1: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
     gap: 20,
   },
 });

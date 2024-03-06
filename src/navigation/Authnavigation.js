@@ -12,15 +12,20 @@ import Qr_codeScreen from '../screens/Qr_codeScreen';
 import auth from '@react-native-firebase/auth';
 import {useEffect} from 'react';
 import {useState} from 'react';
+import StartUpScreen from '../screens/StartUpScreen';
+import {useDispatch} from 'react-redux';
+import {addUID} from '../redux/userTokenSlice';
 const Stack = createStackNavigator();
 
 const Authnavigation = () => {
   const [user, setUser] = useState('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const unregister = auth().onAuthStateChanged(userExist => {
       if (userExist) {
         setUser(userExist);
+        dispatch(addUID(userExist.uid));
       } else {
         setUser('');
       }
@@ -48,6 +53,7 @@ const Authnavigation = () => {
           </>
         ) : (
           <>
+            <Stack.Screen name="StartUpScreen" component={StartUpScreen} />
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen
               name="LoginWithEmail_Password"

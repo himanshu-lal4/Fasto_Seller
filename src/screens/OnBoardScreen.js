@@ -10,10 +10,7 @@ const OnBoardScreen = () => {
   const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
-      <AuthHeader
-        tittle={`LET'S GET YOU STARTED`}
-        onPress={() => navigation.goBack()}
-      />
+      <AuthHeader backButton={false} tittle={`LET'S GET YOU STARTED`} />
       <Category />
     </SafeAreaView>
   );
