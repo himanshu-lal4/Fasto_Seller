@@ -14,6 +14,7 @@ import {COLORS} from '../../assets/theme';
 import {ScrollView} from 'react-native-virtualized-view';
 import Button from '../Common/Button';
 import VectorIcon from '../../assets/VectorIcon/VectorIcon';
+import RTCIndex from '../webRTC/RTCIndex';
 
 const CategoryScreen = () => {
   const navigation = useNavigation();
@@ -79,7 +80,12 @@ const CategoryScreen = () => {
           />
         </View>
       </ScrollView>
-      <Button tittle={'continue'} onPress={handleContinue} />
+      <Button
+        tittle={'continue'}
+        onPress={() => {
+          navigation.navigate('RTCIndex');
+        }}
+      />
     </>
   );
 };

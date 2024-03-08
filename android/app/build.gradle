@@ -76,6 +76,12 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.fasto_seller"
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         applicationId "com.fasto_seller"
         minSdkVersion rootProject.ext.minSdkVersion
