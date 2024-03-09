@@ -1,7 +1,9 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {View, Image, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 const PickupCall = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.circleContainer}>
@@ -12,11 +14,13 @@ const PickupCall = () => {
         <Text style={styles.profileName}>Your Name</Text>
       </View>
       <View style={styles.buttonView}>
-        <TouchableOpacity style={styles.circleButton}>
-          <Text style={styles.buttonText}>Button 1</Text>
+        <TouchableOpacity
+          style={styles.circleButton}
+          onPress={() => navigation.navigate('RTCIndex')}>
+          <Text style={styles.buttonText}>pick</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.circleButton}>
-          <Text style={styles.buttonText}>Button 2</Text>
+          <Text style={styles.buttonText}>dismiss</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.circleButton}>
           <Text style={styles.buttonText}>Button 3</Text>

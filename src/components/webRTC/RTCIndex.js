@@ -20,7 +20,8 @@ import {
 import {useState} from 'react';
 
 import firestore from '@react-native-firebase/firestore';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {addChannelId} from '../../redux/callingChannelSlice';
 
 const RTCIndex = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
@@ -31,6 +32,7 @@ const RTCIndex = ({navigation}) => {
   const [localStream, setLocalStream] = useState(null);
   const [channelId, setChannelId] = useState(null);
   const pc = useRef();
+  const dispatch = useDispatch();
   const servers = {
     iceServers: [
       {
@@ -112,8 +114,8 @@ const RTCIndex = ({navigation}) => {
     });
   };
 
-  const joinCall = async () => {
-    const channelDoc = firestore().collection('channels').doc(channelId);
+  const joinCall = async val => {
+    const channelDoc = firestore().collection('channels').doc(val);
     const offerCandidates = channelDoc.collection('offerCandidates');
     const answerCandidates = channelDoc.collection('answerCandidates');
 
@@ -159,8 +161,13 @@ const RTCIndex = ({navigation}) => {
     setRemoteStream(null);
     setChannelId(null);
     setWebcamStarted(false);
-    navigation.goBack();
+    dispatch(addChannelId(null));
+    navigation.navigate('OnBoardScreen');
   };
+  useEffect(() => {
+    console.log('currentChannelId', currentChannelId);
+    joinCall(currentChannelId);
+  }, []);
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
       <SafeAreaView>
@@ -188,14 +195,14 @@ const RTCIndex = ({navigation}) => {
           {webcamStarted && <Button title="Start call" onPress={startCall} />}
           {webcamStarted && (
             <View style={{flexDirection: 'row'}}>
-              <Button title="Join call" onPress={joinCall} />
+              {/* <Button title="Join call" onPress={joinCall} />
               <TextInput
                 value={channelId}
                 placeholder="callId"
                 minLength={45}
                 style={{borderWidth: 1, padding: 5}}
                 onChangeText={newText => setChannelId(newText)}
-              />
+              /> */}
               <Button title="End Call" onPress={endCall} />
             </View>
           )}
