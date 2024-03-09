@@ -2,6 +2,7 @@ import {Platform} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
 import {addChannelId} from '../redux/callingChannelSlice';
 var nav = null;
 export const registerNotifee = async (navigation, dispatch) => {
@@ -21,6 +22,7 @@ export const registerNotifee = async (navigation, dispatch) => {
     // const {channelId} = message.data;
     dispatch(addChannelId(message.data.channelId));
     console.log('remote data ', message.data.channelId);
+    console.log('user UID ', message.data.userUID);
     await sendNotification(
       message.notification.title,
       message.notification.body,
