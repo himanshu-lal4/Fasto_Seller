@@ -16,6 +16,8 @@ export const registerNotifee = async navigation => {
     // notifee.displayNotification(message.data.notifee);
     console.log(message.notification.title);
     console.log(message.notification.body);
+    // const {channelId} = message.data;
+    console.log('remote data ', message.data.channelId);
     await sendNotification(
       message.notification.title,
       message.notification.body,
