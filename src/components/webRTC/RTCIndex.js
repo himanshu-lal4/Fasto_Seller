@@ -1,6 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 
 import {
+  BackHandler,
   Button,
   KeyboardAvoidingView,
   SafeAreaView,
@@ -172,6 +173,24 @@ const RTCIndex = ({navigation}) => {
     setChannelId(currentChannelId);
     startWebcam();
   }, []);
+  useEffect(() => {
+    const backAction = () => {
+      dispatch(addChannelId(null));
+      console.log('Back button pressed');
+
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove(); // Remove the event listener on component unmount
+
+    // The empty dependency array ensures that this effect runs once
+    // Similar to componentDidMount in class components
+  }, []);
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
       <SafeAreaView>
@@ -192,10 +211,10 @@ const RTCIndex = ({navigation}) => {
             mirror
           />
         )}
-        <View style={styles.buttons}>
-          {/* {!webcamStarted && (
+        {/* <View style={styles.buttons}>
+          {!webcamStarted && (
             <Button title="Start webcam" onPress={startWebcam} />
-          )} */}
+          )}
           {webcamStarted && <Button title="Start call" onPress={startCall} />}
           {webcamStarted && (
             <View style={{flexDirection: 'row'}}>
@@ -205,12 +224,12 @@ const RTCIndex = ({navigation}) => {
                 placeholder="callId"
                 minLength={45}
                 style={{borderWidth: 1, padding: 5}}
-                // onChangeText={newText => setChannelId(newText)}
+                onChangeText={newText => setChannelId(newText)}
               />
-              <Button title="End Call" onPress={endCall} />
             </View>
           )}
-        </View>
+        </View> */}
+        <Button title="End Call" onPress={endCall} />
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
