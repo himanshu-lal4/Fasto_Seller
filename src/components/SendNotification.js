@@ -2,8 +2,10 @@ import {Platform} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
-
-export const registerNotifee = async navigation => {
+import {addChannelId} from '../redux/callingChannelSlice';
+var nav = null;
+export const registerNotifee = async (navigation, dispatch) => {
+  nav = navigation;
   // Register the device with FCM
   await messaging().registerDeviceForRemoteMessages();
 
@@ -17,6 +19,7 @@ export const registerNotifee = async navigation => {
     console.log(message.notification.title);
     console.log(message.notification.body);
     // const {channelId} = message.data;
+    dispatch(addChannelId(message.data.channelId));
     console.log('remote data ', message.data.channelId);
     await sendNotification(
       message.notification.title,
@@ -34,12 +37,12 @@ export const registerNotifee = async navigation => {
         break;
       case EventType.PRESS:
         console.log('User pressed notification', detail.notification);
-        navigation.navigate('OnBoardScreen');
+        // navigation.navigate('OnBoardScreen');
+        navigation.navigate('PickupCall');
         break;
     }
   });
 };
-
 notifee.onBackgroundEvent(async ({type, detail}) => {
   switch (type) {
     case EventType.DISMISSED:
@@ -47,6 +50,8 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
       break;
     case EventType.PRESS:
       console.log('User pressed notification', detail.notification);
+      nav?.navigate('PickupCall');
+
       break;
   }
 });

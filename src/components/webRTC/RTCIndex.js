@@ -20,9 +20,12 @@ import {
 import {useState} from 'react';
 
 import firestore from '@react-native-firebase/firestore';
+import {useSelector} from 'react-redux';
 
 const RTCIndex = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
+  const currentChannelId = useSelector(state => state.callingChannel.value);
+  console.log('🚀 ~ RTCIndex ~ currentChannelId:', currentChannelId);
 
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
