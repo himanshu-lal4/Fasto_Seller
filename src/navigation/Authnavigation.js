@@ -18,7 +18,7 @@ import {addUID} from '../redux/userTokenSlice';
 import RTCIndex from '../components/webRTC/RTCIndex';
 import {useNavigation} from '@react-navigation/native';
 import {registerNotifee} from '../components/SendNotification';
-import PickCallScreen from '../screens/PickCallScreen';
+import PickupCall from '../screens/PickupCall';
 const Stack = createStackNavigator();
 
 const Authnavigation = () => {
@@ -41,8 +41,9 @@ const Authnavigation = () => {
 
   const navigation = useNavigation();
   //setup notification
+
   useEffect(() => {
-    registerNotifee(navigation);
+    registerNotifee(navigation, dispatch);
   }, []);
 
   return (
@@ -51,7 +52,9 @@ const Authnavigation = () => {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-        }}>
+        }}
+        // initialRouteName="PickupCall"
+      >
         {user ? (
           <>
             <Stack.Screen name="PickCallScreen" component={PickCallScreen} />
@@ -63,6 +66,7 @@ const Authnavigation = () => {
             <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
             <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
             <Stack.Screen name="RTCIndex" component={RTCIndex} />
+            <Stack.Screen name="PickupCall" component={PickupCall} />
           </>
         ) : (
           <>

@@ -23,14 +23,19 @@ import {Dimensions} from 'react-native';
 import {COLORS} from '../../assets/theme';
 import VectorIcon from '../../utils/VectorIcon';
 const {width, height} = Dimensions.get('window');
+import {useDispatch, useSelector} from 'react-redux';
+import {addChannelId} from '../../redux/callingChannelSlice';
 
 const RTCIndex = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
+  const currentChannelId = useSelector(state => state.callingChannel.value);
+  console.log('🚀 ~ RTCIndex ~ currentChannelId:', currentChannelId);
 
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [channelId, setChannelId] = useState(null);
   const pc = useRef();
+  const dispatch = useDispatch();
   const servers = {
     iceServers: [
       {
@@ -112,8 +117,8 @@ const RTCIndex = ({navigation}) => {
     });
   };
 
-  const joinCall = async () => {
-    const channelDoc = firestore().collection('channels').doc(channelId);
+  const joinCall = async val => {
+    const channelDoc = firestore().collection('channels').doc(val);
     const offerCandidates = channelDoc.collection('offerCandidates');
     const answerCandidates = channelDoc.collection('answerCandidates');
 
@@ -159,8 +164,13 @@ const RTCIndex = ({navigation}) => {
     setRemoteStream(null);
     setChannelId(null);
     setWebcamStarted(false);
-    navigation.goBack();
+    dispatch(addChannelId(null));
+    navigation.navigate('OnBoardScreen');
   };
+  useEffect(() => {
+    console.log('currentChannelId', currentChannelId);
+    joinCall(currentChannelId);
+  }, []);
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
       <SafeAreaView style={styles.container}>
