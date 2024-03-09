@@ -1,8 +1,9 @@
 import {Platform} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
+import {useNavigation} from '@react-navigation/native';
 
-export const registerNotifee = async () => {
+export const registerNotifee = async navigation => {
   // Register the device with FCM
   await messaging().registerDeviceForRemoteMessages();
 
@@ -21,7 +22,7 @@ export const registerNotifee = async () => {
     );
   }
 
-  // messaging().onMessage(onMessageReceived);
+  messaging().onMessage(onMessageReceived);
   messaging().setBackgroundMessageHandler(onMessageReceived);
 
   return notifee.onForegroundEvent(({type, detail}) => {
@@ -31,6 +32,7 @@ export const registerNotifee = async () => {
         break;
       case EventType.PRESS:
         console.log('User pressed notification', detail.notification);
+        navigation.navigate('OnBoardScreen');
         break;
     }
   });

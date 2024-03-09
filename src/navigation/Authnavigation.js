@@ -16,6 +16,8 @@ import StartUpScreen from '../screens/StartUpScreen';
 import {useDispatch} from 'react-redux';
 import {addUID} from '../redux/userTokenSlice';
 import RTCIndex from '../components/webRTC/RTCIndex';
+import {useNavigation} from '@react-navigation/native';
+import {registerNotifee} from '../components/SendNotification';
 const Stack = createStackNavigator();
 
 const Authnavigation = () => {
@@ -35,6 +37,13 @@ const Authnavigation = () => {
       unregister();
     };
   }, []);
+
+  const navigation = useNavigation();
+  //setup notification
+  useEffect(() => {
+    registerNotifee(navigation);
+  }, []);
+
   return (
     <>
       <StatusBar barStyle={'light-content'} backgroundColor={COLORS.darkBlue} />
