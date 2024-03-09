@@ -57,7 +57,6 @@ const Authnavigation = () => {
       >
         {user ? (
           <>
-            <Stack.Screen name="PickCallScreen" component={PickCallScreen} />
             <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
             <Stack.Screen
               name="SubcategoryScreen"
