@@ -1,4 +1,11 @@
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
@@ -29,8 +36,12 @@ const LoginType = () => {
     });
   }, []);
 
-  const saveDataToFirebase = user => {
-    firestore()
+  const saveDataToFirebase = async user => {
+    await messaging().registerDeviceForRemoteMessages();
+    // Get the token
+    const token = await messaging().getToken();
+
+    await firestore()
       .collection('Sellers')
       .doc(user.uid)
       .set({
@@ -38,6 +49,8 @@ const LoginType = () => {
         email: user.email,
         photoUrl: user.photoURL,
         createdAt: firestore.FieldValue.serverTimestamp(),
+        deviceToken: token,
+        OS: Platform.OS,
       })
       .then(() => {
         console.log('User added!');

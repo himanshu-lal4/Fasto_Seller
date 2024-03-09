@@ -21,7 +21,7 @@ export const registerNotifee = async () => {
     );
   }
 
-  messaging().onMessage(onMessageReceived);
+  // messaging().onMessage(onMessageReceived);
   messaging().setBackgroundMessageHandler(onMessageReceived);
 
   return notifee.onForegroundEvent(({type, detail}) => {
@@ -58,6 +58,7 @@ export const sendNotification = async (title, body) => {
     id: 'default1',
     name: 'Default Channel',
     sound: 'default',
+    // sound: {uri: '../assets/notificationSound/callingSound.mp3'},
     importance: AndroidImportance.HIGH,
   });
 

@@ -7,7 +7,7 @@ import {Provider} from 'react-redux';
 const App = () => {
   //setup notification
   useEffect(() => {
-    <registerNotifee />;
+    registerNotifee();
   }, []);
 
   return (
