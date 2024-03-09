@@ -2,6 +2,7 @@ import {Platform} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
 
 export const registerNotifee = async navigation => {
   // Register the device with FCM
@@ -18,6 +19,7 @@ export const registerNotifee = async navigation => {
     console.log(message.notification.body);
     // const {channelId} = message.data;
     console.log('remote data ', message.data.channelId);
+    console.log('user UID ', message.data.userUID);
     await sendNotification(
       message.notification.title,
       message.notification.body,
@@ -34,7 +36,7 @@ export const registerNotifee = async navigation => {
         break;
       case EventType.PRESS:
         console.log('User pressed notification', detail.notification);
-        navigation.navigate('OnBoardScreen');
+        navigation.navigate('OnBoardScreen', {data: message.data.userUID});
         break;
     }
   });

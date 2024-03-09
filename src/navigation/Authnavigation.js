@@ -18,6 +18,7 @@ import {addUID} from '../redux/userTokenSlice';
 import RTCIndex from '../components/webRTC/RTCIndex';
 import {useNavigation} from '@react-navigation/native';
 import {registerNotifee} from '../components/SendNotification';
+import PickCallScreen from '../screens/PickCallScreen';
 const Stack = createStackNavigator();
 
 const Authnavigation = () => {
@@ -53,6 +54,7 @@ const Authnavigation = () => {
         }}>
         {user ? (
           <>
+            <Stack.Screen name="PickCallScreen" component={PickCallScreen} />
             <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
             <Stack.Screen
               name="SubcategoryScreen"
