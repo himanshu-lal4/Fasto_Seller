@@ -13,7 +13,7 @@ export const registerNotifee = async (navigation, dispatch) => {
   // Get the token
   const token = await messaging().getToken();
 
-  console.log('Notification token -> ' + token);
+  console.log('Notification token ---> ' + token);
 
   async function onMessageReceived(message) {
     // notifee.displayNotification(message.data.notifee);
