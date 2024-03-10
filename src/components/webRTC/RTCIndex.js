@@ -179,6 +179,7 @@ const RTCIndex = ({navigation}) => {
   useEffect(() => {
     const backAction = () => {
       dispatch(addChannelId(null));
+      endCall();
       console.log('Back button pressed');
 
       return true;

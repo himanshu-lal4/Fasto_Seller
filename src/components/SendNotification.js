@@ -4,6 +4,7 @@ import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
 import {useState} from 'react';
 import {addChannelId} from '../redux/callingChannelSlice';
+import {addIncomingUser} from '../redux/IncomingUserSlice';
 var nav = null;
 export const registerNotifee = async (navigation, dispatch) => {
   nav = navigation;
@@ -13,7 +14,7 @@ export const registerNotifee = async (navigation, dispatch) => {
   // Get the token
   const token = await messaging().getToken();
 
-  console.log('Notification token ---> ' + token);
+  console.log('Notification token -> ' + token);
 
   async function onMessageReceived(message) {
     // notifee.displayNotification(message.data.notifee);
@@ -21,6 +22,7 @@ export const registerNotifee = async (navigation, dispatch) => {
     console.log(message.notification.body);
     // const {channelId} = message.data;
     dispatch(addChannelId(message.data.channelId));
+    dispatch(addIncomingUser(message.data.userUID));
     console.log('remote data ', message.data.channelId);
     console.log('user UID ', message.data.userUID);
     await sendNotification(

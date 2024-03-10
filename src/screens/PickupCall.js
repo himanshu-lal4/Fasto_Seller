@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {useDebugValue, useEffect, useState} from 'react';
 import {
   View,
   Image,
@@ -8,19 +8,54 @@ import {
   StyleSheet,
   Animated,
   Easing,
+  BackHandler,
 } from 'react-native';
 import VectorIcon from '../utils/VectorIcon';
 import {COLORS, FONTS} from '../assets/theme';
+import {useDispatch, useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
+import {addChannelId} from '../redux/callingChannelSlice';
 
 const PickupCall = () => {
   const navigation = useNavigation();
   const [borderWidth] = useState(new Animated.Value(1));
   const [borderWidth2] = useState(new Animated.Value(1));
+  const [userName, setUserName] = useState('');
+  const [userImgURL, setUserImgURL] = useState(null);
+  const dispatch = useDispatch();
+  const incomingUser = useSelector(state => state.incomingUser.value);
+  console.log('🚀 ~ PickupCall ~ incomingUser:', incomingUser);
+  async function getIncomingUserData() {
+    console.log('reached getIncomingUserData');
+
+    try {
+      const documentSnapshot = await firestore()
+        .collection('Users')
+        .doc(incomingUser)
+        .get();
+
+      console.log('User exists: ', documentSnapshot.exists);
+
+      if (documentSnapshot.exists) {
+        console.log('User data: ', documentSnapshot.data().photoUrl);
+        console.log(
+          'documentSnapshot.data().data.photoUrl',
+          documentSnapshot.data(),
+        );
+        setUserImgURL(documentSnapshot.data().photoUrl);
+        setUserName(documentSnapshot.data().name);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
 
   useEffect(() => {
+    console.log('reached useEffect');
+    getIncomingUserData();
     animateBorder(borderWidth);
     animateBorder(borderWidth2);
-  }, []);
+  }, [incomingUser]);
 
   const animateBorder = borderWidth => {
     Animated.sequence([
@@ -41,11 +76,41 @@ const PickupCall = () => {
     });
   };
 
+  const cutCall = () => {
+    dispatch(addChannelId(null));
+    navigation.goBack();
+  };
+  useEffect(() => {
+    const backAction = () => {
+      dispatch(addChannelId(null));
+      console.log('Back button pressed');
+      navigation.goBack();
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove(); // Remove the event listener on component unmount
+
+    // The empty dependency array ensures that this effect runs once
+    // Similar to componentDidMount in class components
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.circleContainer}>
-        <Image
+        {/* <Image 
           source={require('../assets/images/userIcon.png')}
+          style={styles.profileImage}
+        />*/}
+        <Image
+          source={
+            userImgURL
+              ? {uri: userImgURL}
+              : require('../assets/images/userIcon.png')
+          }
           style={styles.profileImage}
         />
         <Animated.View
@@ -70,25 +135,25 @@ const PickupCall = () => {
           FONTS.h2,
           {color: COLORS.darkBlue, fontWeight: '600', marginTop: 25},
         ]}>
-        Your Name
+        {userName}
       </Text>
       <View style={styles.buttonView}>
-        <TouchableOpacity style={styles.pickButton}>
+        <TouchableOpacity
+          style={styles.pickButton}
+          onPress={() => navigation.navigate('RTCIndex')}>
           <VectorIcon
             name={'call'}
             type={'MaterialIcons'}
             size={30}
             color={COLORS.white}
-            onPress={() => navigation.navigate('RTCIndex')}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.endButton}>
+        <TouchableOpacity style={styles.endButton} onPress={() => cutCall()}>
           <VectorIcon
             name={'call-end'}
             type={'MaterialIcons'}
             size={30}
             color={COLORS.white}
-            onPress={() => navigation.navigate('RTCIndex')}
           />
         </TouchableOpacity>
       </View>

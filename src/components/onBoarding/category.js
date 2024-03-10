@@ -83,7 +83,7 @@ const CategoryScreen = () => {
       <Button
         tittle={'continue'}
         onPress={() => {
-          navigation.navigate('RTCIndex');
+          handleContinue();
         }}
       />
     </>
