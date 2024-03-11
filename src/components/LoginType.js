@@ -1,4 +1,11 @@
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import styles from '../assets/theme/style';
 import {Card} from 'react-native-paper';
@@ -14,6 +21,8 @@ import {
 import {AccessToken, LoginManager} from 'react-native-fbsdk-next';
 import {useDispatch} from 'react-redux';
 import {addUID} from '../redux/userTokenSlice';
+import firestore from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 
 const LoginType = () => {
   const dispatch = useDispatch();
@@ -27,17 +36,55 @@ const LoginType = () => {
     });
   }, []);
 
+  const saveDataToFirebase = async user => {
+    await messaging().registerDeviceForRemoteMessages();
+    // Get the token
+    const token = await messaging().getToken();
+
+    await firestore()
+      .collection('Sellers')
+      .doc(user.uid)
+      .set({
+        name: user.displayName,
+        email: user.email,
+        photoUrl: user.photoURL,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        deviceToken: token,
+        OS: Platform.OS,
+      })
+      .then(() => {
+        console.log('User added!');
+      });
+  };
+
+  const saveTokenToFirebase = async user => {
+    await messaging().registerDeviceForRemoteMessages();
+    const token = await messaging().getToken();
+    firestore()
+      .collection('FCMTOKEN')
+      .doc(user.uid)
+      .set({
+        DeviceToken: token,
+        OS: Platform.OS,
+        createdAt: firestore.FieldValue.serverTimestamp(),
+      })
+      .then(() => {
+        console.log('User added!');
+      });
+  };
+
   //google Sign In
   const googleSignInHandle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
       const {idToken} = await GoogleSignin.signIn();
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      if (idToken) {
-        navigation.navigate('OnBoardScreen');
-      }
       const {user} = await auth().signInWithCredential(googleCredential);
-      dispatch(addUID(user.uid));
+      if (user) {
+        dispatch(addUID(user.uid));
+        saveDataToFirebase(user);
+        saveTokenToFirebase(user);
+      }
       return;
 
       // return auth().signInWithCredential(googleCredential);
@@ -75,7 +122,11 @@ const LoginType = () => {
       data.accessToken,
     );
     const {user} = await auth().signInWithCredential(facebookCredential);
-    dispatch(addUID(user.uid));
+    if (user) {
+      dispatch(addUID(user.uid));
+      saveDataToFirebase(user);
+      saveTokenToFirebase(user);
+    }
     return;
   };
 

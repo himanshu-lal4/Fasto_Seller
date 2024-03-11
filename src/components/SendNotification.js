@@ -1,8 +1,13 @@
 import {Platform} from 'react-native';
 import notifee, {AndroidImportance, EventType} from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
-
-export const registerNotifee = async () => {
+import {useNavigation} from '@react-navigation/native';
+import {useState} from 'react';
+import {addChannelId} from '../redux/callingChannelSlice';
+import {addIncomingUser} from '../redux/IncomingUserSlice';
+var nav = null;
+export const registerNotifee = async (navigation, dispatch) => {
+  nav = navigation;
   // Register the device with FCM
   await messaging().registerDeviceForRemoteMessages();
 
@@ -15,6 +20,11 @@ export const registerNotifee = async () => {
     // notifee.displayNotification(message.data.notifee);
     console.log(message.notification.title);
     console.log(message.notification.body);
+    // const {channelId} = message.data;
+    dispatch(addChannelId(message.data.channelId));
+    dispatch(addIncomingUser(message.data.userUID));
+    console.log('remote data ', message.data.channelId);
+    console.log('user UID ', message.data.userUID);
     await sendNotification(
       message.notification.title,
       message.notification.body,
@@ -31,11 +41,12 @@ export const registerNotifee = async () => {
         break;
       case EventType.PRESS:
         console.log('User pressed notification', detail.notification);
+        // navigation.navigate('OnBoardScreen');
+        navigation.navigate('PickupCall');
         break;
     }
   });
 };
-
 notifee.onBackgroundEvent(async ({type, detail}) => {
   switch (type) {
     case EventType.DISMISSED:
@@ -43,6 +54,8 @@ notifee.onBackgroundEvent(async ({type, detail}) => {
       break;
     case EventType.PRESS:
       console.log('User pressed notification', detail.notification);
+      nav?.navigate('PickupCall');
+
       break;
   }
 });
@@ -58,6 +71,7 @@ export const sendNotification = async (title, body) => {
     id: 'default1',
     name: 'Default Channel',
     sound: 'default',
+    // sound: {uri: '../assets/notificationSound/callingSound.mp3'},
     importance: AndroidImportance.HIGH,
   });
 

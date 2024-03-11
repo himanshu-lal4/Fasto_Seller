@@ -3,11 +3,16 @@ import QRCode from 'react-native-qrcode-svg';
 import RNFetchBlob from 'rn-fetch-blob';
 import Share from 'react-native-share';
 import React, {useEffect, useRef, useState} from 'react';
-// import VectorIcon from '../../utils/VectorIcon';
 import VectorIcon from '../assets/VectorIcon/VectorIcon';
 import {useSelector} from 'react-redux';
+import {COLORS, FONTS} from '../assets/theme';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Button from '../components/Common/Button';
+import auth from '@react-native-firebase/auth';
+import {useNavigation} from '@react-navigation/native';
 
 const Qr_codeScreen = () => {
+  const navigation = useNavigation();
   const userToken = useSelector(state => state.userToken.UID);
   console.log('🚀 ~ userToken:', userToken);
 
@@ -43,20 +48,82 @@ const Qr_codeScreen = () => {
     }
   };
   return (
-    <View style={{marginTop: 20}}>
+    <SafeAreaView
+      style={{backgroundColor: COLORS.secondaryBackground, height: '100%'}}>
       <View style={styles.section}>
-        <TouchableOpacity onPress={() => saveQR()}>
-          <VectorIcon name="download" type="feather" color="black" size={50} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleShare()}>
-          <VectorIcon name="share" type="feather" color="black" size={50} />
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <VectorIcon
+              name="close"
+              type="AntDesign"
+              color={COLORS.darkBlue}
+              size={30}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.section1}>
+          <TouchableOpacity onPress={() => handleShare()}>
+            <VectorIcon
+              name="share"
+              type="feather"
+              color={COLORS.darkBlue}
+              size={25}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => saveQR()}>
+            <VectorIcon
+              name="download"
+              type="feather"
+              color={COLORS.darkBlue}
+              size={28}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <View style={{alignSelf: 'center', marginTop: '40%'}}>
-        <QRCode value={text ? text : 'NA'} size={300} getRef={ref} />
+      <View
+        style={{
+          alignSelf: 'center',
+          marginTop: '30%',
+          padding: 20,
+          backgroundColor: COLORS.primaryBackgroundColor,
+          borderRadius: 17,
+        }}>
+        <QRCode
+          value={text ? text : 'NA'}
+          size={230}
+          color={COLORS.darkBlue}
+          getRef={ref}
+        />
       </View>
-    </View>
+      <View style={{alignSelf: 'center', marginTop: 10}}>
+        <Text
+          style={{
+            color: COLORS.darkBlue,
+            fontSize: 18,
+            textAlign: 'center',
+            // fontFamily: FONTS.body2,
+          }}>
+          Hello seller! Here's your QR code.
+        </Text>
+        <Text
+          style={{color: COLORS.darkBlue, fontSize: 18, textAlign: 'center'}}>
+          Scan further to see more!
+        </Text>
+      </View>
+
+      <View style={{marginTop: 100}}>
+        <Button
+          tittle={'Logout'}
+          onPress={() =>
+            auth()
+              .signOut()
+              .then(() => console.log('Logged Out'))
+              .catch(err => console.log('err', err))
+          }
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -77,6 +144,13 @@ const styles = StyleSheet.create({
   section: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
+    alignItems: 'center',
+    marginTop: 30,
+    paddingHorizontal: 20,
+  },
+  section1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 20,
   },
 });
