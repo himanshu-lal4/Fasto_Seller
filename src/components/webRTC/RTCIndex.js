@@ -138,6 +138,14 @@ const RTCIndex = ({navigation}) => {
       new RTCSessionDescription(offerDescription),
     );
 
+    const unsubscribe = channelDoc.onSnapshot(snapshot => {
+      const data = snapshot.data();
+      if (data && data.user === false) {
+        endCall();
+        unsubscribe();
+      }
+    });
+
     const answer = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answer);
 
@@ -156,7 +164,7 @@ const RTCIndex = ({navigation}) => {
   console.log('🚀 ~ RTCIndex ~ remoteStream:', remoteStream);
   console.log(localStream?.toURL());
   console.log('🚀 ~ RTCIndex ~ localStream:', localStream);
-  const endCall = () => {
+  const endCall = async () => {
     // Close the peer connection and reset states
     if (pc.current) {
       pc.current.close();
@@ -167,6 +175,13 @@ const RTCIndex = ({navigation}) => {
     setWebcamStarted(false);
     dispatch(addChannelId(null));
     navigation.navigate('OnBoardScreen');
+
+    if (channelId) {
+      const channelDoc = firestore().collection('channels').doc(channelId);
+      await channelDoc.update({
+        seller: false,
+      });
+    }
   };
   setTimeout(function () {
     joinCall();
