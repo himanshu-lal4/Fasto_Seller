@@ -24,6 +24,8 @@ const PickupCall = () => {
   const [userImgURL, setUserImgURL] = useState(null);
   const dispatch = useDispatch();
   const incomingUser = useSelector(state => state.incomingUser.value);
+  const channelId = useSelector(state => state.callingChannel.value);
+  console.log('🚀 ~ useSelector ~ channelid:', channelId);
   console.log('🚀 ~ PickupCall ~ incomingUser:', incomingUser);
   async function getIncomingUserData() {
     console.log('reached getIncomingUserData');
@@ -76,10 +78,17 @@ const PickupCall = () => {
     });
   };
 
-  const cutCall = () => {
+  const cutCall = async () => {
+    if (channelId) {
+      const channelDoc = firestore().collection('channels').doc(channelId);
+      await channelDoc.update({
+        seller: false,
+      });
+    }
     dispatch(addChannelId(null));
     navigation.goBack();
   };
+
   useEffect(() => {
     const backAction = () => {
       dispatch(addChannelId(null));
