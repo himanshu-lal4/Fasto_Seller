@@ -2,7 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
 import {addChannelId} from '../redux/callingChannelSlice';
 import {addIncomingUser} from '../redux/IncomingUserSlice';
-
+// import Sound from 'react-native-sound';
 const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
   //   const navigation = useNavigation();
   console.log(
@@ -12,8 +12,13 @@ const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
   if (remoteMessage) {
     dispatch(addChannelId(remoteMessage.data.channelId));
     dispatch(addIncomingUser(remoteMessage.data.userUID));
-    navigation.navigate('PickupCall');
+    navigation.navigate('PickupCall', {remoteMessage});
   }
+
+  // const sound = '../assets/notificationSound/callingSound.mp3';
+  // const sound = 'file://../callingSound.mp3';
+  // const notificationSound = new Sound(sound);
+  // notificationSound.play();
 
   console.log(remoteMessage);
 };
@@ -29,6 +34,14 @@ export const registerNotificationHandlers = (navigation, dispatch) => {
       }
     });
 
+  messaging().onMessage(async remoteMessage => {
+    // Handle notification click here
+    console.log(
+      'Notification clicked while app is in the foreground:',
+      remoteMessage,
+    );
+    navigation.navigate('PickupCall');
+  });
   // Function to handle notification clicks when the app is opened from background or terminated
   messaging().onNotificationOpenedApp(async remoteMessage => {
     // This will be triggered if the app was already open when the notification was clicked
