@@ -3,14 +3,10 @@ import Index from './src/navigation/Index';
 import {registerNotifee} from './src/components/SendNotification';
 import store from './src/redux/store';
 import {Provider} from 'react-redux';
-import notifee from '@notifee/react-native';
-async function requestNotificationPermission() {
-  await notifee.requestPermission();
-}
 
-// Call the function to request permission
-requestNotificationPermission();
-
+import {Alert} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {registerNotificationHandlers} from './src/utils/Messaging';
 const App = () => {
   return (
     <Provider store={store}>

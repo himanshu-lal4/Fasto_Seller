@@ -1,0 +1,37 @@
+import messaging from '@react-native-firebase/messaging';
+import {useNavigation} from '@react-navigation/native';
+import {addChannelId} from '../redux/callingChannelSlice';
+import {addIncomingUser} from '../redux/IncomingUserSlice';
+
+const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
+  //   const navigation = useNavigation();
+  console.log(
+    'Notification clicked while app is in the background:',
+    remoteMessage,
+  );
+  if (remoteMessage) {
+    dispatch(addChannelId(remoteMessage.data.channelId));
+    dispatch(addIncomingUser(remoteMessage.data.userUID));
+    navigation.navigate('PickupCall');
+  }
+
+  console.log(remoteMessage);
+};
+
+export const registerNotificationHandlers = (navigation, dispatch) => {
+  // Function to handle initial notification when the app is opened from terminated state
+  messaging()
+    .getInitialNotification()
+    .then(remoteMessage => {
+      // Handle initial notification when the app is opened from terminated state
+      if (remoteMessage) {
+        handleNotificationClick(remoteMessage, navigation, dispatch);
+      }
+    });
+
+  // Function to handle notification clicks when the app is opened from background or terminated
+  messaging().onNotificationOpenedApp(async remoteMessage => {
+    // This will be triggered if the app was already open when the notification was clicked
+    handleNotificationClick(remoteMessage, navigation, dispatch);
+  });
+};

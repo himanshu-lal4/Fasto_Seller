@@ -19,12 +19,26 @@ import RTCIndex from '../components/webRTC/RTCIndex';
 import {useNavigation} from '@react-navigation/native';
 import {registerNotifee} from '../components/SendNotification';
 import PickupCall from '../screens/PickupCall';
+import messaging from '@react-native-firebase/messaging';
+import {registerNotificationHandlers} from '../utils/Messaging';
 const Stack = createStackNavigator();
-
 const Authnavigation = () => {
+  const navigation = useNavigation();
   const [user, setUser] = useState('');
   const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //     navigation.navigate('PickupCall');
+  //   });
 
+  //   return unsubscribe;
+  // }, []);
+  // const navigation = useNavigation();
+  useEffect(() => {
+    // Register notification handlers when the app starts
+    registerNotificationHandlers(navigation, dispatch);
+  }, []);
   useEffect(() => {
     const unregister = auth().onAuthStateChanged(userExist => {
       if (userExist) {
@@ -39,12 +53,11 @@ const Authnavigation = () => {
     };
   }, []);
 
-  const navigation = useNavigation();
   //setup notification
 
-  useEffect(() => {
-    registerNotifee(navigation, dispatch);
-  }, []);
+  // useEffect(() => {
+  //   registerNotifee(navigation, dispatch);
+  // }, []);
 
   return (
     <>
