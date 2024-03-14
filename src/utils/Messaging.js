@@ -12,7 +12,13 @@ const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
   if (remoteMessage) {
     dispatch(addChannelId(remoteMessage.data.channelId));
     dispatch(addIncomingUser(remoteMessage.data.userUID));
-    navigation.navigate('PickupCall', {remoteMessage});
+    console.log(
+      'user Id & channelId in message ',
+      remoteMessage.data.channelId,
+      ' ',
+      remoteMessage.data.userUID,
+    );
+    navigation.navigate('PickupCall');
   }
 
   // const sound = '../assets/notificationSound/callingSound.mp3';
@@ -36,6 +42,8 @@ export const registerNotificationHandlers = (navigation, dispatch) => {
 
   messaging().onMessage(async remoteMessage => {
     // Handle notification click here
+    dispatch(addChannelId(remoteMessage.data.channelId));
+    dispatch(addIncomingUser(remoteMessage.data.userUID));
     console.log(
       'Notification clicked while app is in the foreground:',
       remoteMessage,

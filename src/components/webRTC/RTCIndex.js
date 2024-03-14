@@ -138,14 +138,30 @@ const RTCIndex = ({navigation}) => {
       new RTCSessionDescription(offerDescription),
     );
 
-    const unsubscribe = channelDoc.onSnapshot(snapshot => {
-      const data = snapshot.data();
-      if (data && data.user === false) {
-        endCall();
-        unsubscribe();
-      }
-    });
+    // const unsubscribe = channelDoc.onSnapshot(snapshot => {
+    //   const data = snapshot.data();
+    //   if (data && data.user === false) {
+    //     endCall();
+    //     // unsubscribe();
+    //   }
+    // });
 
+    const unsubscribe = channelDoc.onSnapshot(
+      snapshot => {
+        if (snapshot.exists) {
+          const data = snapshot.data();
+          if (data && data.user === false) {
+            endCall();
+            // unsubscribe();
+          }
+        } else {
+          console.log('Document does not exist');
+        }
+      },
+      error => {
+        console.error('Error fetching snapshot:', error);
+      },
+    );
     const answer = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answer);
 
@@ -174,7 +190,6 @@ const RTCIndex = ({navigation}) => {
     setChannelId(null);
     setWebcamStarted(false);
     dispatch(addChannelId(null));
-    navigation.navigate('OnBoardScreen');
 
     if (channelId) {
       const channelDoc = firestore().collection('channels').doc(channelId);
@@ -182,6 +197,7 @@ const RTCIndex = ({navigation}) => {
         seller: false,
       });
     }
+    navigation.navigate('OnBoardScreen');
   };
   setTimeout(function () {
     joinCall();

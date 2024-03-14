@@ -16,7 +16,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {addChannelId} from '../redux/callingChannelSlice';
 
-const PickupCall = ({route}) => {
+const PickupCall = () => {
   const navigation = useNavigation();
   const [borderWidth] = useState(new Animated.Value(1));
   const [borderWidth2] = useState(new Animated.Value(1));
@@ -25,7 +25,7 @@ const PickupCall = ({route}) => {
   const dispatch = useDispatch();
   const incomingUser = useSelector(state => state.incomingUser.value);
   const channelId = useSelector(state => state.callingChannel.value);
-  const {remoteMessage} = route.params;
+  // const {remoteMessage} = route.params;
   console.log('🚀 ~ useSelector ~ channelid:', channelId);
   console.log('🚀 ~ PickupCall ~ incomingUser:', incomingUser);
   async function getIncomingUserData() {
@@ -87,7 +87,7 @@ const PickupCall = ({route}) => {
       });
     }
     dispatch(addChannelId(null));
-    route.params.remoteMessage = null;
+    // route.params.remoteMessage = null;
     navigation.goBack();
   };
 
