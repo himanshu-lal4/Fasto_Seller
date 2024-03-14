@@ -70,12 +70,6 @@ const Authnavigation = () => {
       >
         {user ? (
           <>
-            <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
-            <Stack.Screen
-              name="SubcategoryScreen"
-              component={SubcategoryScreen}
-            />
-            <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
             <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
             <Stack.Screen name="RTCIndex" component={RTCIndex} />
             <Stack.Screen name="PickupCall" component={PickupCall} />
@@ -88,6 +82,12 @@ const Authnavigation = () => {
               name="LoginWithEmail_Password"
               component={LoginWithEmail_Password}
             />
+            <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
+            <Stack.Screen
+              name="SubcategoryScreen"
+              component={SubcategoryScreen}
+            />
+            <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
           </>
         )}
       </Stack.Navigator>

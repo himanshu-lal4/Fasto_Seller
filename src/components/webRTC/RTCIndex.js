@@ -67,10 +67,10 @@ const RTCIndex = ({navigation}) => {
         if (pc.current.connectionState === 'disconnected') {
           // Peer connection closed
           console.log('Peer connection disconnected.');
-          navigation.navigate('OnBoardScreen');
+          navigation.navigate('QR_codeScreen');
         } else if (pc.current.connectionState === 'closed') {
           console.log('Peer connection closed.');
-          navigation.navigate('OnBoardScreen');
+          navigation.navigate('QR_codeScreen');
         }
       };
 
