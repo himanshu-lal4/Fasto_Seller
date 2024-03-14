@@ -62,6 +62,23 @@ const RTCIndex = ({navigation}) => {
 
       pc.current = new RTCPeerConnection(servers); // Ensure pc.current is properly initialized
 
+      pc.current.onconnectionstatechange = event => {
+        console.log('Connection state changed:', pc.current.connectionState);
+        if (pc.current.connectionState === 'disconnected') {
+          // Peer connection closed
+          console.log('Peer connection disconnected.');
+          navigation.navigate('OnBoardScreen');
+        } else if (pc.current.connectionState === 'closed') {
+          console.log('Peer connection closed.');
+          navigation.navigate('OnBoardScreen');
+        }
+      };
+
+      // Add event listener for errors
+      pc.current.onerror = error => {
+        console.error('An error occurred:', error);
+      };
+
       pc.current.ontrack = event => {
         console.log('Received remote tracks:', event.track);
         event.streams.forEach(stream => {
@@ -146,22 +163,22 @@ const RTCIndex = ({navigation}) => {
     //   }
     // });
 
-    const unsubscribe = channelDoc.onSnapshot(
-      snapshot => {
-        if (snapshot.exists) {
-          const data = snapshot.data();
-          if (data && data.user === false) {
-            endCall();
-            // unsubscribe();
-          }
-        } else {
-          console.log('Document does not exist');
-        }
-      },
-      error => {
-        console.error('Error fetching snapshot:', error);
-      },
-    );
+    // const unsubscribe = channelDoc.onSnapshot(
+    //   snapshot => {
+    //     if (snapshot.exists) {
+    //       const data = snapshot.data();
+    //       if (data && data.user === false) {
+    //         endCall();
+    //         // unsubscribe();
+    //       }
+    //     } else {
+    //       console.log('Document does not exist');
+    //     }
+    //   },
+    //   error => {
+    //     console.error('Error fetching snapshot:', error);
+    //   },
+    // );
     const answer = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answer);
 
@@ -191,13 +208,13 @@ const RTCIndex = ({navigation}) => {
     setWebcamStarted(false);
     dispatch(addChannelId(null));
 
-    if (channelId) {
-      const channelDoc = firestore().collection('channels').doc(channelId);
-      await channelDoc.update({
-        seller: false,
-      });
-    }
-    navigation.navigate('OnBoardScreen');
+    // if (channelId) {
+    //   const channelDoc = firestore().collection('channels').doc(channelId);
+    //   await channelDoc.update({
+    //     seller: false,
+    //   });
+    // }
+    // navigation.navigate('OnBoardScreen');
   };
   setTimeout(function () {
     joinCall();
@@ -226,6 +243,41 @@ const RTCIndex = ({navigation}) => {
     // The empty dependency array ensures that this effect runs once
     // Similar to componentDidMount in class components
   }, []);
+
+  // Add event listeners for connection state changes
+
+  // Inside the RTCIndex component
+  // useEffect(() => {
+  //   startWebcam();
+
+  //   // Initialize RTCPeerConnection and add event listeners
+  //   pc.current = new RTCPeerConnection(servers);
+
+  //   // Add event listener for connection state changes
+  //   pc.current.onconnectionstatechange = event => {
+  //     console.log('Connection state changed:', pc.current.connectionState);
+  //     if (pc.current.connectionState === 'closed') {
+  //       // Peer connection closed
+  //       console.log('Peer connection closed.');
+  //       // Perform any additional actions if needed
+  //     }
+  //   };
+
+  //   // Add event listener for errors
+  //   pc.current.onerror = error => {
+  //     console.error('An error occurred:', error);
+  //     // Handle error appropriately
+  //   };
+
+  //   // Cleanup function: remove event listeners on component unmount
+  //   return () => {
+  //     if (pc.current) {
+  //       pc.current.onconnectionstatechange = null;
+  //       pc.current.onerror = null;
+  //     }
+  //   };
+  // }, []); // Empty dependency array ensures this effect runs only once, like componentDidMount
+
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
       <SafeAreaView style={styles.container}>
