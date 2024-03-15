@@ -37,10 +37,6 @@ const RTCIndex = ({navigation}) => {
   const [localStream, setLocalStream] = useState(null);
   const [channelId, setChannelId] = useState(null);
 
-  useEffect(() => {
-    initializeCrashlytics();
-  }, []);
-
   const pc = useRef();
   const dispatch = useDispatch();
   const servers = {
