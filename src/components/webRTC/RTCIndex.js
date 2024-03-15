@@ -26,6 +26,7 @@ import VectorIcon from '../../utils/VectorIcon';
 const {width, height} = Dimensions.get('window');
 import {useDispatch, useSelector} from 'react-redux';
 import {addChannelId} from '../../redux/callingChannelSlice';
+import {initializeCrashlytics} from '../../utils/Crashlytics';
 
 const RTCIndex = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
@@ -35,6 +36,11 @@ const RTCIndex = ({navigation}) => {
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [channelId, setChannelId] = useState(null);
+
+  useEffect(() => {
+    initializeCrashlytics();
+  }, []);
+
   const pc = useRef();
   const dispatch = useDispatch();
   const servers = {
@@ -96,9 +102,7 @@ const RTCIndex = ({navigation}) => {
       console.error('Error starting webcam:', error);
     }
   };
-  // useEffect(() => {
-  //   startWebcam();
-  // }, []);
+
   const startCall = async () => {
     const channelDoc = firestore().collection('channels').doc();
     const offerCandidates = channelDoc.collection('offerCandidates');
@@ -214,7 +218,7 @@ const RTCIndex = ({navigation}) => {
     //     seller: false,
     //   });
     // }
-    // navigation.navigate('OnBoardScreen');
+    // navigation.navigate('QR_codeScreen');
   };
   setTimeout(function () {
     joinCall();
@@ -243,40 +247,6 @@ const RTCIndex = ({navigation}) => {
     // The empty dependency array ensures that this effect runs once
     // Similar to componentDidMount in class components
   }, []);
-
-  // Add event listeners for connection state changes
-
-  // Inside the RTCIndex component
-  // useEffect(() => {
-  //   startWebcam();
-
-  //   // Initialize RTCPeerConnection and add event listeners
-  //   pc.current = new RTCPeerConnection(servers);
-
-  //   // Add event listener for connection state changes
-  //   pc.current.onconnectionstatechange = event => {
-  //     console.log('Connection state changed:', pc.current.connectionState);
-  //     if (pc.current.connectionState === 'closed') {
-  //       // Peer connection closed
-  //       console.log('Peer connection closed.');
-  //       // Perform any additional actions if needed
-  //     }
-  //   };
-
-  //   // Add event listener for errors
-  //   pc.current.onerror = error => {
-  //     console.error('An error occurred:', error);
-  //     // Handle error appropriately
-  //   };
-
-  //   // Cleanup function: remove event listeners on component unmount
-  //   return () => {
-  //     if (pc.current) {
-  //       pc.current.onconnectionstatechange = null;
-  //       pc.current.onerror = null;
-  //     }
-  //   };
-  // }, []); // Empty dependency array ensures this effect runs only once, like componentDidMount
 
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
