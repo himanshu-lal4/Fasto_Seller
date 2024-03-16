@@ -202,6 +202,13 @@ const RTCIndex = ({navigation}) => {
     if (pc.current) {
       pc.current.close();
     }
+
+    await database()
+      .ref(`/Sellers/${currentChannelId}`)
+      .update({
+        callStatus: false,
+      })
+      .then(() => console.log('Data updated.', currentChannelId));
     setLocalStream(null);
     setRemoteStream(null);
     setChannelId(null);
