@@ -27,7 +27,7 @@ const {width, height} = Dimensions.get('window');
 import {useDispatch, useSelector} from 'react-redux';
 import {addChannelId} from '../../redux/callingChannelSlice';
 import {initializeCrashlytics} from '../../utils/Crashlytics';
-
+import database from '@react-native-firebase/database';
 const RTCIndex = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
   const currentChannelId = useSelector(state => state.callingChannel.value);
@@ -203,12 +203,17 @@ const RTCIndex = ({navigation}) => {
       pc.current.close();
     }
 
-    await database()
-      .ref(`/Sellers/${currentChannelId}`)
-      .update({
+    try {
+      console.log('inside endCall try');
+      await database().ref(`/Sellers/${currentChannelId}`).update({
         callStatus: false,
-      })
-      .then(() => console.log('Data updated.', currentChannelId));
+      });
+      console.log('after endCall try');
+      console.log('Data updated.', currentChannelId);
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+
     setLocalStream(null);
     setRemoteStream(null);
     setChannelId(null);
@@ -227,9 +232,12 @@ const RTCIndex = ({navigation}) => {
     joinCall();
   }, 100);
   useEffect(() => {
-    console.log('currentChannelId', currentChannelId);
-    setChannelId(currentChannelId);
-    startWebcam();
+    const fun = async () => {
+      console.log('currentChannelId', currentChannelId);
+      setChannelId(currentChannelId);
+      await startWebcam();
+    };
+    fun();
   }, []);
   useEffect(() => {
     const backAction = () => {
