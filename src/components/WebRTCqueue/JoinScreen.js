@@ -13,6 +13,7 @@ import database from '@react-native-firebase/database';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import muteMicrophoneImage from '../../assets/images/voice.png';
 import microphoneImage from '../../assets/images/microphone.png';
+import InCallManager from 'react-native-incall-manager';
 const configuration = {
   iceServers: [
     {
@@ -48,7 +49,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [localStream, setLocalStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
   const [cachedLocalPC, setCachedLocalPC] = useState();
-
+  const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
   const startLocalStream = async () => {
@@ -148,6 +149,9 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const switchCamera = () => {
     localStream.getVideoTracks().forEach(track => track._switchCamera());
   };
+  const toggleSpeaker = () => {
+    console.log('toggleSpeaker');
+  };
 
   const toggleMute = () => {
     if (!remoteStream) {
@@ -216,7 +220,8 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
               source={require('../../assets/images/chat.png')}
             />
           </TouchableOpacity>
-          <TouchableOpacity>
+
+          <TouchableOpacity onPress={toggleSpeaker}>
             <Image
               style={{width: 50, height: 50}}
               source={require('../../assets/images/speaker.png')}
@@ -234,7 +239,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
               source={isMuted ? muteMicrophoneImage : microphoneImage}
             />
           </TouchableOpacity>
-
           <TouchableOpacity onPress={onBackPress}>
             <Image
               style={{width: 40, height: 40, marginTop: 4}}

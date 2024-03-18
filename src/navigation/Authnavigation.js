@@ -22,6 +22,7 @@ import PickupCall from '../screens/PickupCall';
 import messaging from '@react-native-firebase/messaging';
 import {registerNotificationHandlers} from '../utils/Messaging';
 import WebRTCIndex from '../components/WebRTCqueue/WebRTCIndex';
+
 const Stack = createStackNavigator();
 const Authnavigation = () => {
   const navigation = useNavigation();
