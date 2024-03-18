@@ -2,7 +2,6 @@ import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
 import {addChannelId} from '../redux/callingChannelSlice';
 import {addIncomingUser} from '../redux/IncomingUserSlice';
-// import Sound from 'react-native-sound';
 const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
   //   const navigation = useNavigation();
   console.log(
@@ -12,6 +11,7 @@ const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
   if (remoteMessage) {
     dispatch(addChannelId(remoteMessage.data.channelId));
     dispatch(addIncomingUser(remoteMessage.data.userUID));
+
     console.log(
       'user Id & channelId in message ',
       remoteMessage.data.channelId,

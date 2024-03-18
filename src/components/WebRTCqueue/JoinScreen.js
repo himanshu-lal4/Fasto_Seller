@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Text, StyleSheet, Button, View, Image} from 'react-native';
+import {Text, StyleSheet, Button, View, Image, BackHandler} from 'react-native';
 
 import {
   RTCPeerConnection,
@@ -13,6 +13,8 @@ import database from '@react-native-firebase/database';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import muteMicrophoneImage from '../../assets/images/voice.png';
 import microphoneImage from '../../assets/images/microphone.png';
+import speakerOnImg from '../../assets/images/speaker.png';
+import speakerOfImg from '../../assets/images/speaker-filled-audio-tool.png';
 import InCallManager from 'react-native-incall-manager';
 const configuration = {
   iceServers: [
@@ -24,6 +26,12 @@ const configuration = {
 };
 
 export default function JoinScreen({setScreen, screens, roomId, navigation}) {
+  const [localStream, setLocalStream] = useState();
+  const [remoteStream, setRemoteStream] = useState();
+  const [cachedLocalPC, setCachedLocalPC] = useState();
+  const [isSpeakerOn, setIsSpeakerOn] = useState(false);
+  const [speakerOn, setSpeakerOn] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const [startWebCamState, setStartWebCamState] = useState();
   async function onBackPress() {
     if (cachedLocalPC) {
@@ -43,14 +51,25 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     } catch (error) {
       console.error('Error updating data:', error);
     }
+    InCallManager.stop();
     navigation.navigate('QR_codeScreen');
   }
+  useEffect(() => {
+    const backAction = async () => {
+      // dispatch(addChannelId(null));
+      // await onBackPress();
+      console.log('Back button pressed');
 
-  const [localStream, setLocalStream] = useState();
-  const [remoteStream, setRemoteStream] = useState();
-  const [cachedLocalPC, setCachedLocalPC] = useState();
-  const [isSpeakerOn, setIsSpeakerOn] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
 
   const startLocalStream = async () => {
     const isFront = true;
@@ -149,8 +168,22 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const switchCamera = () => {
     localStream.getVideoTracks().forEach(track => track._switchCamera());
   };
+  InCallManager.start();
   const toggleSpeaker = () => {
-    console.log('toggleSpeaker');
+    const newMode = !speakerOn;
+    setSpeakerOn(newMode);
+
+    // Set the speaker mode
+    if (newMode) {
+      // setSpeakerphoneOn;
+      // InCallManager.setForceSpeakerphoneOn(true);
+      InCallManager.setSpeakerphoneOn(true);
+      console.log('inside toggleSpeaker if', newMode);
+    } else {
+      // InCallManager.setForceSpeakerphoneOn(false);
+      InCallManager.setSpeakerphoneOn(false);
+      console.log('inside toggleSpeaker else', newMode);
+    }
   };
 
   const toggleMute = () => {
@@ -223,8 +256,8 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
 
           <TouchableOpacity onPress={toggleSpeaker}>
             <Image
-              style={{width: 50, height: 50}}
-              source={require('../../assets/images/speaker.png')}
+              style={{width: 40, height: 40, marginTop: 4}}
+              source={speakerOn ? speakerOfImg : speakerOnImg}
             />
           </TouchableOpacity>
           <TouchableOpacity onPress={switchCamera}>

@@ -15,8 +15,12 @@ import {COLORS, FONTS} from '../assets/theme';
 import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import {addChannelId} from '../redux/callingChannelSlice';
-
+import database from '@react-native-firebase/database';
+import InCallManager from 'react-native-incall-manager';
+import ringtonePath from '../assets/audio/ringtone_call_phone.mp3';
 const PickupCall = () => {
+  InCallManager.start();
+
   const navigation = useNavigation();
   const [borderWidth] = useState(new Animated.Value(1));
   const [borderWidth2] = useState(new Animated.Value(1));
@@ -54,12 +58,23 @@ const PickupCall = () => {
   }
 
   useEffect(() => {
+    const unsubscribe = database()
+      .ref(`/Sellers/${channelId}`)
+      .on('value', snapshot => {
+        const data = snapshot?.val();
+        if (data?.userCallStatus === false) {
+          cutCall();
+        }
+        console.log('Data updated:', data);
+      });
+  }, []);
+
+  useEffect(() => {
     console.log('reached useEffect');
     getIncomingUserData();
     animateBorder(borderWidth);
     animateBorder(borderWidth2);
   }, [incomingUser]);
-
   const animateBorder = borderWidth => {
     Animated.sequence([
       Animated.timing(borderWidth, {
@@ -81,14 +96,20 @@ const PickupCall = () => {
 
   const cutCall = async () => {
     if (channelId) {
-      const channelDoc = firestore().collection('channels').doc(channelId);
-      await channelDoc.update({
-        seller: false,
-      });
+      console.log('inside cut call');
+      try {
+        await database().ref(`/Sellers/${channelId}`).update({
+          sellerCallStatus: false,
+        });
+        console.log('Data updated.', channelId);
+      } catch (error) {
+        console.error('Error updating data:', error);
+      }
+      // navigation.navigate('QR_codeScreen');
     }
     dispatch(addChannelId(null));
     // route.params.remoteMessage = null;
-    navigation.goBack();
+    navigation.navigate('QR_codeScreen');
   };
 
   useEffect(() => {
@@ -151,7 +172,10 @@ const PickupCall = () => {
       <View style={styles.buttonView}>
         <TouchableOpacity
           style={styles.pickButton}
-          onPress={() => navigation.navigate('WebRTCIndex')}>
+          onPress={() => {
+            InCallManager.stopRingtone();
+            navigation.navigate('WebRTCIndex');
+          }}>
           <VectorIcon
             name={'call'}
             type={'MaterialIcons'}
