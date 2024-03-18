@@ -151,7 +151,7 @@ const PickupCall = () => {
       <View style={styles.buttonView}>
         <TouchableOpacity
           style={styles.pickButton}
-          onPress={() => navigation.navigate('RTCIndex')}>
+          onPress={() => navigation.navigate('WebRTCIndex')}>
           <VectorIcon
             name={'call'}
             type={'MaterialIcons'}

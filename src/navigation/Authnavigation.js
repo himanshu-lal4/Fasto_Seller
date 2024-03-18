@@ -21,6 +21,7 @@ import {registerNotifee} from '../components/SendNotification';
 import PickupCall from '../screens/PickupCall';
 import messaging from '@react-native-firebase/messaging';
 import {registerNotificationHandlers} from '../utils/Messaging';
+import WebRTCIndex from '../components/WebRTCqueue/WebRTCIndex';
 const Stack = createStackNavigator();
 const Authnavigation = () => {
   const navigation = useNavigation();
@@ -66,12 +67,13 @@ const Authnavigation = () => {
         screenOptions={{
           headerShown: false,
         }}
-        // initialRouteName="PickupCall"
+        // initialRouteName="WebRTCIndex"
       >
         {user ? (
           <>
             <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
             <Stack.Screen name="RTCIndex" component={RTCIndex} />
+            <Stack.Screen name="WebRTCIndex" component={WebRTCIndex} />
             <Stack.Screen name="PickupCall" component={PickupCall} />
           </>
         ) : (
