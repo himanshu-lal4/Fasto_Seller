@@ -11,7 +11,7 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import muteMicrophoneImage from '../../assets/images/mute-microphone.png';
+import muteMicrophoneImage from '../../assets/images/voice.png';
 import microphoneImage from '../../assets/images/microphone.png';
 const configuration = {
   iceServers: [
@@ -185,57 +185,12 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
 
   return (
     <>
-      <Text style={styles.heading}>Join Screen</Text>
+      {/* <Text style={styles.heading}>Join Screen</Text> */}
       {/* <Text style={styles.heading}>Room : {roomId}</Text> */}
 
-      <View style={styles.callButtons}>
-        <View styles={styles.buttonContainer}>
-          <TouchableOpacity onPress={onBackPress}>
-            <Image
-              style={{width: 50, height: 50}}
-              source={require('../../assets/images/delete-button.png')}
-            />
-          </TouchableOpacity>
-          {/* <Button title="Click to stop call" onPress={onBackPress} /> */}
-        </View>
-        <View styles={styles.buttonContainer}>
-          {!localStream && (
-            <Button title="Click to start stream" onPress={startLocalStream} />
-          )}
-          {localStream && (
-            <Button
-              title="Click to join call"
-              onPress={() => joinCall(roomId)}
-              disabled={!!remoteStream}
-            />
-          )}
-        </View>
-      </View>
+      {/* <View style={styles.callButtons}> */}
 
-      {localStream && (
-        <View style={styles.toggleButtons}>
-          <TouchableOpacity onPress={switchCamera}>
-            <Image
-              style={{width: 50, height: 50}}
-              source={require('../../assets/images/switch-camera.png')}
-            />
-          </TouchableOpacity>
-          {/* <Button title="Switch camera" onPress={switchCamera} /> */}
-          <TouchableOpacity onPress={toggleMute}>
-            <Image
-              style={{width: 50, height: 50}}
-              source={isMuted ? muteMicrophoneImage : microphoneImage}
-            />
-          </TouchableOpacity>
-          {/* <Button
-            title={`${isMuted ? 'Unmute' : 'Mute'} stream`}
-            onPress={toggleMute}
-            disabled={!remoteStream}
-          /> */}
-        </View>
-      )}
-
-      <View style={{display: 'flex', flex: 1, padding: 10}}>
+      <View style={{display: 'flex', flex: 1}}>
         <View style={styles.rtcview}>
           {localStream && (
             <RTCView
@@ -244,13 +199,48 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
             />
           )}
         </View>
-        <View style={styles.rtcview}>
-          {remoteStream && (
+        {remoteStream && (
+          <View style={styles.rtcview}>
             <RTCView
               style={styles.rtc}
               streamURL={remoteStream && remoteStream.toURL()}
             />
-          )}
+          </View>
+        )}
+      </View>
+      <View style={{flexDirection: 'row'}}>
+        <View style={styles.toggleButtons}>
+          <TouchableOpacity>
+            <Image
+              style={{width: 40, height: 40, marginTop: 4}}
+              source={require('../../assets/images/chat.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Image
+              style={{width: 50, height: 50}}
+              source={require('../../assets/images/speaker.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={switchCamera}>
+            <Image
+              style={{width: 40, height: 40, marginTop: 4}}
+              source={require('../../assets/images/switch-camera.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleMute}>
+            <Image
+              style={{width: 40, height: 40, marginTop: 4}}
+              source={isMuted ? muteMicrophoneImage : microphoneImage}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={onBackPress}>
+            <Image
+              style={{width: 40, height: 40, marginTop: 4}}
+              source={require('../../assets/images/phone-call-end.png')}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -263,16 +253,21 @@ const styles = StyleSheet.create({
     fontSize: 30,
   },
   rtcview: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-    margin: 5,
-  },
-  rtc: {
-    flex: 1,
     width: '100%',
     height: '100%',
+    flex: 1,
+    borderRadius: 30,
+    overflow: 'hidden',
+    objectFit: 'cover',
+    marginBottom: 20,
+  },
+  rtc: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    borderRadius: 18,
+    overflow: 'hidden',
+    objectFit: 'cover',
   },
   toggleButtons: {
     width: '100%',
@@ -283,7 +278,6 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-around',
   },
   buttonContainer: {
     margin: 5,
