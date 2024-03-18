@@ -8,7 +8,6 @@ import {
   RTCIceCandidate,
   RTCSessionDescription,
 } from 'react-native-webrtc';
-import {db} from '../utilities/firebase';
 import firestore from '@react-native-firebase/firestore';
 import database from '@react-native-firebase/database';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -24,8 +23,8 @@ const configuration = {
 };
 
 export default function JoinScreen({setScreen, screens, roomId, navigation}) {
+  const [startWebCamState, setStartWebCamState] = useState();
   async function onBackPress() {
-    console.log('inside onBackPress___>');
     if (cachedLocalPC) {
       localStream.getTracks().forEach(track => {
         track.stop();
@@ -36,11 +35,9 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     setRemoteStream();
     setCachedLocalPC();
     try {
-      console.log('inside endCall try line no 36');
       await database().ref(`/Sellers/${roomId}`).update({
         sellerCallStatus: false,
       });
-      console.log('after endCall try');
       console.log('Data updated.', roomId);
     } catch (error) {
       console.error('Error updating data:', error);
@@ -55,9 +52,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [isMuted, setIsMuted] = useState(false);
 
   const startLocalStream = async () => {
-    console.log('inside startLocalStream___>');
-
-    // isFront will determine if the initial camera should face user or environment
     const isFront = true;
     const devices = await mediaDevices.enumerateDevices();
 
@@ -70,7 +64,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       audio: true,
       video: {
         mandatory: {
-          minWidth: 500, // Provide your own width, height and frame rate here
+          minWidth: 500,
           minHeight: 300,
           minFrameRate: 30,
         },
@@ -80,9 +74,11 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     };
     const newStream = await mediaDevices.getUserMedia(constraints);
     setLocalStream(newStream);
+    setStartWebCamState(true);
   };
 
   const joinCall = async id => {
+    console.log('join Call rendered');
     const unsubscribe = database()
       .ref(`/Sellers/${roomId}`)
       .on('value', snapshot => {
@@ -92,12 +88,12 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
         }
         console.log('Data updated:', data);
       });
-    console.log('inside JoinCall------------->');
+
     const roomRef = await firestore().collection('rooms').doc(id);
     const roomSnapshot = await roomRef.get();
 
     if (!roomSnapshot.exists) return;
-
+    console.log('reached till last');
     const offer = roomSnapshot.data().offer;
     if (!offer) {
       console.error('Offer not found in room data.');
@@ -153,17 +149,39 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     localStream.getVideoTracks().forEach(track => track._switchCamera());
   };
 
-  // Mutes the local's outgoing audio
   const toggleMute = () => {
     if (!remoteStream) {
       return;
     }
     localStream.getAudioTracks().forEach(track => {
-      // console.log(track.enabled ? 'muting' : 'unmuting', ' local track', track);
       track.enabled = !track.enabled;
       setIsMuted(!track.enabled);
     });
   };
+
+  useEffect(() => {
+    // Call function 1
+    startLocalStream();
+  }, []); // Empty dependency array ensures this runs only once after mount
+
+  useEffect(() => {
+    // Check if state1 is updated, then call function 2
+    console.log(
+      'inside useEffect startWebCamState value============>',
+      startWebCamState,
+    );
+    if (startWebCamState === true) {
+      console.log(
+        'inside useEffect if condition startWebCamState value============>',
+        startWebCamState,
+      );
+      joinCall(roomId);
+    }
+  }, [startWebCamState]);
+  console.log(
+    'outside useEffect startWebCamState value============>',
+    startWebCamState,
+  );
 
   return (
     <>
