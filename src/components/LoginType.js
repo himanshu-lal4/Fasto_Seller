@@ -40,6 +40,7 @@ const LoginType = () => {
     await messaging().registerDeviceForRemoteMessages();
     // Get the token
     const token = await messaging().getToken();
+    console.log('🚀 ~ saveDataToFirebase ~ token:', token);
 
     await firestore()
       .collection('Sellers')

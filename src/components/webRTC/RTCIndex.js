@@ -26,7 +26,8 @@ import VectorIcon from '../../utils/VectorIcon';
 const {width, height} = Dimensions.get('window');
 import {useDispatch, useSelector} from 'react-redux';
 import {addChannelId} from '../../redux/callingChannelSlice';
-
+import {initializeCrashlytics} from '../../utils/Crashlytics';
+import database from '@react-native-firebase/database';
 const RTCIndex = ({navigation}) => {
   const [remoteStream, setRemoteStream] = useState(null);
   const currentChannelId = useSelector(state => state.callingChannel.value);
@@ -35,6 +36,7 @@ const RTCIndex = ({navigation}) => {
   const [webcamStarted, setWebcamStarted] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [channelId, setChannelId] = useState(null);
+
   const pc = useRef();
   const dispatch = useDispatch();
   const servers = {
@@ -62,6 +64,23 @@ const RTCIndex = ({navigation}) => {
 
       pc.current = new RTCPeerConnection(servers); // Ensure pc.current is properly initialized
 
+      pc.current.onconnectionstatechange = event => {
+        console.log('Connection state changed:', pc.current.connectionState);
+        if (pc.current.connectionState === 'disconnected') {
+          // Peer connection closed
+          console.log('Peer connection disconnected.');
+          navigation.navigate('QR_codeScreen');
+        } else if (pc.current.connectionState === 'closed') {
+          console.log('Peer connection closed.');
+          navigation.navigate('QR_codeScreen');
+        }
+      };
+
+      // Add event listener for errors
+      pc.current.onerror = error => {
+        console.error('An error occurred:', error);
+      };
+
       pc.current.ontrack = event => {
         console.log('Received remote tracks:', event.track);
         event.streams.forEach(stream => {
@@ -79,9 +98,7 @@ const RTCIndex = ({navigation}) => {
       console.error('Error starting webcam:', error);
     }
   };
-  // useEffect(() => {
-  //   startWebcam();
-  // }, []);
+
   const startCall = async () => {
     const channelDoc = firestore().collection('channels').doc();
     const offerCandidates = channelDoc.collection('offerCandidates');
@@ -138,6 +155,30 @@ const RTCIndex = ({navigation}) => {
       new RTCSessionDescription(offerDescription),
     );
 
+    // const unsubscribe = channelDoc.onSnapshot(snapshot => {
+    //   const data = snapshot.data();
+    //   if (data && data.user === false) {
+    //     endCall();
+    //     // unsubscribe();
+    //   }
+    // });
+
+    // const unsubscribe = channelDoc.onSnapshot(
+    //   snapshot => {
+    //     if (snapshot.exists) {
+    //       const data = snapshot.data();
+    //       if (data && data.user === false) {
+    //         endCall();
+    //         // unsubscribe();
+    //       }
+    //     } else {
+    //       console.log('Document does not exist');
+    //     }
+    //   },
+    //   error => {
+    //     console.error('Error fetching snapshot:', error);
+    //   },
+    // );
     const answer = await pc.current.createAnswer();
     await pc.current.setLocalDescription(answer);
 
@@ -156,25 +197,47 @@ const RTCIndex = ({navigation}) => {
   console.log('🚀 ~ RTCIndex ~ remoteStream:', remoteStream);
   console.log(localStream?.toURL());
   console.log('🚀 ~ RTCIndex ~ localStream:', localStream);
-  const endCall = () => {
+  const endCall = async () => {
     // Close the peer connection and reset states
     if (pc.current) {
       pc.current.close();
     }
+
+    try {
+      console.log('inside endCall try');
+      await database().ref(`/Sellers/${currentChannelId}`).update({
+        callStatus: false,
+      });
+      console.log('after endCall try');
+      console.log('Data updated.', currentChannelId);
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+
     setLocalStream(null);
     setRemoteStream(null);
     setChannelId(null);
     setWebcamStarted(false);
     dispatch(addChannelId(null));
-    navigation.navigate('OnBoardScreen');
+
+    // if (channelId) {
+    //   const channelDoc = firestore().collection('channels').doc(channelId);
+    //   await channelDoc.update({
+    //     seller: false,
+    //   });
+    // }
+    // navigation.navigate('QR_codeScreen');
   };
   setTimeout(function () {
     joinCall();
   }, 100);
   useEffect(() => {
-    console.log('currentChannelId', currentChannelId);
-    setChannelId(currentChannelId);
-    startWebcam();
+    const fun = async () => {
+      console.log('currentChannelId', currentChannelId);
+      setChannelId(currentChannelId);
+      await startWebcam();
+    };
+    fun();
   }, []);
   useEffect(() => {
     const backAction = () => {
@@ -195,6 +258,7 @@ const RTCIndex = ({navigation}) => {
     // The empty dependency array ensures that this effect runs once
     // Similar to componentDidMount in class components
   }, []);
+
   return (
     <KeyboardAvoidingView style={styles.body} behavior="position">
       <SafeAreaView style={styles.container}>

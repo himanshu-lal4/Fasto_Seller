@@ -19,12 +19,28 @@ import RTCIndex from '../components/webRTC/RTCIndex';
 import {useNavigation} from '@react-navigation/native';
 import {registerNotifee} from '../components/SendNotification';
 import PickupCall from '../screens/PickupCall';
-const Stack = createStackNavigator();
+import messaging from '@react-native-firebase/messaging';
+import {registerNotificationHandlers} from '../utils/Messaging';
+import WebRTCIndex from '../components/WebRTCqueue/WebRTCIndex';
 
+const Stack = createStackNavigator();
 const Authnavigation = () => {
+  const navigation = useNavigation();
   const [user, setUser] = useState('');
   const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     // Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //     navigation.navigate('PickupCall');
+  //   });
 
+  //   return unsubscribe;
+  // }, []);
+  // const navigation = useNavigation();
+  useEffect(() => {
+    // Register notification handlers when the app starts
+    registerNotificationHandlers(navigation, dispatch);
+  }, []);
   useEffect(() => {
     const unregister = auth().onAuthStateChanged(userExist => {
       if (userExist) {
@@ -39,12 +55,11 @@ const Authnavigation = () => {
     };
   }, []);
 
-  const navigation = useNavigation();
   //setup notification
 
-  useEffect(() => {
-    registerNotifee(navigation, dispatch);
-  }, []);
+  // useEffect(() => {
+  //   registerNotifee(navigation, dispatch);
+  // }, []);
 
   return (
     <>
@@ -53,18 +68,13 @@ const Authnavigation = () => {
         screenOptions={{
           headerShown: false,
         }}
-        // initialRouteName="PickupCall"
+        // initialRouteName="WebRTCIndex"
       >
         {user ? (
           <>
-            <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
-            <Stack.Screen
-              name="SubcategoryScreen"
-              component={SubcategoryScreen}
-            />
-            <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
             <Stack.Screen name="QR_codeScreen" component={Qr_codeScreen} />
             <Stack.Screen name="RTCIndex" component={RTCIndex} />
+            <Stack.Screen name="WebRTCIndex" component={WebRTCIndex} />
             <Stack.Screen name="PickupCall" component={PickupCall} />
           </>
         ) : (
@@ -75,6 +85,12 @@ const Authnavigation = () => {
               name="LoginWithEmail_Password"
               component={LoginWithEmail_Password}
             />
+            <Stack.Screen name="OnBoardScreen" component={OnBoardScreen} />
+            <Stack.Screen
+              name="SubcategoryScreen"
+              component={SubcategoryScreen}
+            />
+            <Stack.Screen name="ChooseImgScreen" component={ChooseImgScreen} />
           </>
         )}
       </Stack.Navigator>
