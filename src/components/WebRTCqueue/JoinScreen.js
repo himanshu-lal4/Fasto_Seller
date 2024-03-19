@@ -16,6 +16,7 @@ import microphoneImage from '../../assets/images/microphone.png';
 import speakerOnImg from '../../assets/images/speaker.png';
 import speakerOfImg from '../../assets/images/speaker-filled-audio-tool.png';
 import InCallManager from 'react-native-incall-manager';
+import {useSelector} from 'react-redux';
 const configuration = {
   iceServers: [
     {
@@ -26,6 +27,9 @@ const configuration = {
 };
 
 export default function JoinScreen({setScreen, screens, roomId, navigation}) {
+  console.log('roomId----->', roomId);
+  const sellerId = useSelector(state => state.userToken.UID);
+  console.log('🚀 ~ JoinScreen ~ sellerId:', sellerId);
   const [localStream, setLocalStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
   const [cachedLocalPC, setCachedLocalPC] = useState();
@@ -51,7 +55,109 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     } catch (error) {
       console.error('Error updating data:', error);
     }
-    InCallManager.stop();
+
+    if (remoteStream) {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('calleeCandidates') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    } else {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    }
     navigation.navigate('QR_codeScreen');
   }
   useEffect(() => {
@@ -109,7 +215,13 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
         console.log('Data updated:', data);
       });
 
-    const roomRef = await firestore().collection('rooms').doc(id);
+    // const roomRef = await firestore().collection('rooms').doc(id);
+    console.log('id--------->', id);
+    const roomRef = firestore()
+      .collection('videoRoom')
+      .doc(sellerId)
+      .collection('rooms')
+      .doc(id);
     const roomSnapshot = await roomRef.get();
 
     if (!roomSnapshot.exists) return;
