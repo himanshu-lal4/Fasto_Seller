@@ -63,7 +63,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
             allRooms.push(doc.id);
           });
 
-          console.log('AllRooms IDs:', allRooms);
+          // console.log('AllRooms IDs:', allRooms);
           await fetchUserDetailsFromRooms();
         },
         error => {
@@ -97,134 +97,137 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       }
     }
     setAllCallUsers(allUserDetails);
-    console.log(
-      'all userDetails after fetching data from rooms',
-      allUserDetails,
-    );
+    // console.log(
+    //   'all userDetails after fetching data from rooms',
+    //   allUserDetails,
+    // );
   };
 
   async function onBackPress() {
+    console.log('ALL user data ------------------------> ', allCallUser);
     if (cachedLocalPC) {
       localStream.getTracks().forEach(track => {
         track.stop();
       });
       cachedLocalPC.close();
     }
-    setLocalStream();
+    // setLocalStream();
     setRemoteStream();
     setCachedLocalPC();
     try {
       await database().ref(`/Sellers/${roomId}`).update({
         sellerCallStatus: false,
       });
-      console.log('Data updated.', roomId);
+      // console.log('Data updated.', roomId);
     } catch (error) {
       console.error('Error updating data:', error);
     }
 
-    // if (remoteStream) {
-    //   firestore()
-    //     .collection('videoRoom')
-    //     .doc(sellerId)
-    //     .collection('rooms')
-    //     .doc(roomId)
-    //     .collection('callerCandidates') // First collection within 'channelId' document
-    //     .get()
-    //     .then(querySnapshot => {
-    //       querySnapshot.forEach(doc => {
-    //         doc.ref.delete();
-    //       });
-    //     })
-    //     .then(() => {
-    //       // Step 2: Delete all documents within the second collection
-    //       return firestore()
-    //         .collection('videoRoom')
-    //         .doc(sellerId)
-    //         .collection('rooms')
-    //         .doc(roomId)
-    //         .collection('currCallData') // Second collection within 'channelId' document
-    //         .get();
-    //     })
-    //     .then(querySnapshot => {
-    //       querySnapshot.forEach(doc => {
-    //         doc.ref.delete();
-    //       });
-    //     })
-    //     .then(() => {
-    //       // Step 2: Delete all documents within the second collection
-    //       return firestore()
-    //         .collection('videoRoom')
-    //         .doc(sellerId)
-    //         .collection('rooms')
-    //         .doc(roomId)
-    //         .collection('calleeCandidates') // Second collection within 'channelId' document
-    //         .get();
-    //     })
-    //     .then(querySnapshot => {
-    //       querySnapshot.forEach(doc => {
-    //         doc.ref.delete();
-    //       });
-    //     })
-    //     .then(() => {
-    //       // Step 3: Delete the 'channelId' document
-    //       return firestore()
-    //         .collection('videoRoom')
-    //         .doc(sellerId)
-    //         .collection('rooms')
-    //         .doc(roomId)
-    //         .delete();
-    //     })
-    //     .then(() => {
-    //       console.log('Document and its collections deleted successfully.');
-    //     })
-    //     .catch(error => {
-    //       console.error('Error deleting document and collections:', error);
-    //     });
-    // } else {
-    //   firestore()
-    //     .collection('videoRoom')
-    //     .doc(sellerId)
-    //     .collection('rooms')
-    //     .doc(roomId)
-    //     .collection('callerCandidates') // First collection within 'channelId' document
-    //     .get()
-    //     .then(querySnapshot => {
-    //       querySnapshot.forEach(doc => {
-    //         doc.ref.delete();
-    //       });
-    //     })
-    //     .then(() => {
-    //       // Step 2: Delete all documents within the second collection
-    //       return firestore()
-    //         .collection('videoRoom')
-    //         .doc(sellerId)
-    //         .collection('rooms')
-    //         .doc(roomId)
-    //         .collection('currCallData') // Second collection within 'channelId' document
-    //         .get();
-    //     })
-    //     .then(querySnapshot => {
-    //       querySnapshot.forEach(doc => {
-    //         doc.ref.delete();
-    //       });
-    //     })
-    //     .then(() => {
-    //       // Step 3: Delete the 'channelId' document
-    //       return firestore()
-    //         .collection('videoRoom')
-    //         .doc(sellerId)
-    //         .collection('rooms')
-    //         .doc(roomId)
-    //         .delete();
-    //     })
-    //     .then(() => {
-    //       console.log('Document and its collections deleted successfully.');
-    //     })
-    //     .catch(error => {
-    //       console.error('Error deleting document and collections:', error);
-    //     });
-    // }
-    navigation.navigate('QR_codeScreen');
+    if (remoteStream) {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('calleeCandidates') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    } else {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    }
+    if (allCallUser.length === 0) {
+      navigation.navigate('QR_codeScreen');
+    }
   }
   useEffect(() => {
     const backAction = async () => {
@@ -271,8 +274,8 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
 
   const joinCall = async id => {
     await fetchAllRooms();
-    console.log('join Call rendered before fetching userDAtassss');
-    console.log('join Call rendered after fetching userDAtassss');
+    // console.log('join Call rendered before fetching userDAtassss');
+    // console.log('join Call rendered after fetching userDAtassss');
     const unsubscribe = database()
       .ref(`/Sellers/${roomId}`)
       .on('value', snapshot => {
@@ -280,7 +283,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
         if (data?.userCallStatus === false) {
           onBackPress();
         }
-        console.log('Data updated:', data);
+        // console.log('Data updated:', data);
       });
 
     // const roomRef = await firestore().collection('rooms').doc(id);
@@ -391,7 +394,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       style={styles.rootImgContainer}
       onPress={() => {
         // setClickedSeller(item.id);
-        console.log('itemId---------->', item.id);
+        // console.log('itemId---------->', item.id);
       }}>
       <View style={styles.imgContainer}>
         {/* <Image style={styles.img} source={{uri: item.data.imageUrl}} /> */}

@@ -57,17 +57,17 @@ const PickupCall = () => {
     }
   }
 
-  useEffect(() => {
-    const unsubscribe = database()
-      .ref(`/Sellers/${channelId}`)
-      .on('value', snapshot => {
-        const data = snapshot?.val();
-        if (data?.userCallStatus === false) {
-          cutCall();
-        }
-        console.log('Data updated:', data);
-      });
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = database()
+  //     .ref(`/Sellers/${channelId}`)
+  //     .on('value', snapshot => {
+  //       const data = snapshot?.val();
+  //       if (data?.userCallStatus === false) {
+  //         cutCall();
+  //       }
+  //       console.log('Data updated:', data);
+  //     });
+  // }, []);
 
   useEffect(() => {
     console.log('reached useEffect');
