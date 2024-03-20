@@ -65,6 +65,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
 
           // console.log('AllRooms IDs:', allRooms);
           await fetchUserDetailsFromRooms();
+          console.log('user details fetched --------------- >>>>>>>>>>>>>>>.');
         },
         error => {
           console.error('Error fetching channel IDs:', error);
@@ -91,16 +92,16 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       if (currCallDataSnapshot.exists) {
         const userData = currCallDataSnapshot.data();
         const {name, email, photoUrl, deviceToken} = userData.userData;
-        allUserDetails.push({name, email, photoUrl, deviceToken});
+        allUserDetails.push({name, email, photoUrl, deviceToken, roomId});
       } else {
         console.log('Document not found');
       }
     }
     setAllCallUsers(allUserDetails);
-    // console.log(
-    //   'all userDetails after fetching data from rooms',
-    //   allUserDetails,
-    // );
+    console.log(
+      'all userDetails after fetching data from rooms',
+      allUserDetails,
+    );
   };
 
   async function onBackPress() {
@@ -375,6 +376,8 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     });
   };
 
+  const onClickQueuSeller = () => {};
+
   useEffect(() => {
     // Call function 1
     startLocalStream();
@@ -395,6 +398,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       onPress={() => {
         // setClickedSeller(item.id);
         // console.log('itemId---------->', item.id);
+        onClickQueuSeller();
       }}>
       <View style={styles.imgContainer}>
         {/* <Image style={styles.img} source={{uri: item.data.imageUrl}} /> */}
