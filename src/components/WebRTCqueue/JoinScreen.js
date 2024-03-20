@@ -25,6 +25,8 @@ import speakerOnImg from '../../assets/images/speaker.png';
 import speakerOfImg from '../../assets/images/speaker-filled-audio-tool.png';
 import InCallManager from 'react-native-incall-manager';
 import {useSelector} from 'react-redux';
+import {DummyData} from './DummyData';
+import {COLORS, FONTS} from '../../assets/theme';
 const configuration = {
   iceServers: [
     {
@@ -35,9 +37,9 @@ const configuration = {
 };
 
 export default function JoinScreen({setScreen, screens, roomId, navigation}) {
-  console.log('roomId----->', roomId);
+  // console.log('roomId----->', roomId);
   const sellerId = useSelector(state => state.userToken.UID);
-  console.log('🚀 ~ JoinScreen ~ sellerId:', sellerId);
+  // console.log('🚀 ~ JoinScreen ~ sellerId:', sellerId);
   const [localStream, setLocalStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
   const [cachedLocalPC, setCachedLocalPC] = useState();
@@ -45,6 +47,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [speakerOn, setSpeakerOn] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [startWebCamState, setStartWebCamState] = useState();
+  const [allCallUser, setAllCallUsers] = useState([]);
   let allRooms = [];
   // let allRooms2 = ['4NugCWS7m8cnOwwuK4GS', '56cl0M4h7A3rXFWmTIrm'];
   async function fetchAllRooms() {
@@ -53,18 +56,15 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       .doc(sellerId)
       .collection('rooms')
       .onSnapshot(
-        querySnapshot => {
-          // Clear the array before updating it with new values
+        async querySnapshot => {
           allRooms = [];
 
-          // Loop through each document in the query snapshot
           querySnapshot.forEach(doc => {
-            // Get the channelId from each document and push it to the array
             allRooms.push(doc.id);
           });
 
-          // Now, allRooms array contains all channelId values
-          console.log('Channel IDs:', allRooms);
+          console.log('AllRooms IDs:', allRooms);
+          await fetchUserDetailsFromRooms();
         },
         error => {
           console.error('Error fetching channel IDs:', error);
@@ -72,38 +72,36 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       );
   }
 
-  async function fetchAllIncomingUsersDetails() {
-    console.log('inside fetchAllIncommingUserDetails');
-    const currCallDataRef = firestore()
-      .collection('videoRoom')
-      .doc(sellerId)
-      .collection('rooms')
-      .doc(roomId) // Assuming the document ID is the same as the seller ID, adjust accordingly if not
-      .collection('currCallData')
-      .doc(sellerId);
+  const fetchUserDetailsFromRooms = async () => {
+    const allUserDetails = [];
+    for (let i = 0; i < allRooms.length; i++) {
+      const roomId = allRooms[i];
 
-    // Retrieve the document snapshot
-    const snapshot = await currCallDataRef.get();
+      // Get a reference to the currCallData document for each room
+      const currCallDataRef = await firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('currCallData')
+        .doc(sellerId);
 
-    if (snapshot.exists) {
-      // Extract user data from the snapshot
-      const userData = snapshot.data().userData;
-
-      // Now you can access user details
-      const name = userData.name;
-      const email = userData.email;
-      const photoUrl = userData.photoUrl;
-      const deviceToken = userData.deviceToken;
-
-      // Use the user details as needed
-      console.log('User Name:------------->', name);
-      console.log('Email:--------------------->', email);
-      console.log('Photo URL: --------------------->', photoUrl);
-      console.log('Device Token: --------------------->', deviceToken);
-    } else {
-      console.log('Document does not exist');
+      // Get the userData from currCallData for each room
+      const currCallDataSnapshot = await currCallDataRef.get();
+      if (currCallDataSnapshot.exists) {
+        const userData = currCallDataSnapshot.data();
+        const {name, email, photoUrl, deviceToken} = userData.userData;
+        allUserDetails.push({name, email, photoUrl, deviceToken});
+      } else {
+        console.log('Document not found');
+      }
     }
-  }
+    setAllCallUsers(allUserDetails);
+    console.log(
+      'all userDetails after fetching data from rooms',
+      allUserDetails,
+    );
+  };
 
   async function onBackPress() {
     if (cachedLocalPC) {
@@ -274,7 +272,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const joinCall = async id => {
     await fetchAllRooms();
     console.log('join Call rendered before fetching userDAtassss');
-    await fetchAllIncomingUsersDetails();
     console.log('join Call rendered after fetching userDAtassss');
     const unsubscribe = database()
       .ref(`/Sellers/${roomId}`)
@@ -389,17 +386,20 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   }, [startWebCamState]);
 
   const renderItem = ({item}) => (
-    <View
-      style={{
-        // padding: 10,
-        borderWidth: 1,
-        borderColor: 'red',
-        // margin: 5,
-        backgroundColor: 'red',
+    <TouchableOpacity
+      key={item.id}
+      style={styles.rootImgContainer}
+      onPress={() => {
+        // setClickedSeller(item.id);
+        console.log('itemId---------->', item.id);
       }}>
-      {/* <Text>{item}</Text> */}
-      <Text>0</Text>
-    </View>
+      <View style={styles.imgContainer}>
+        {/* <Image style={styles.img} source={{uri: item.data.imageUrl}} /> */}
+        <Image style={styles.img} source={{uri: item.photoUrl}} />
+      </View>
+      {/* <Text style={[FONTS.body3, styles.text]}>{item.data.name}</Text> */}
+      <Text style={[FONTS.body3, styles.text]}>{item.name}</Text>
+    </TouchableOpacity>
   );
 
   return (
@@ -472,6 +472,19 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
           </TouchableOpacity>
         </View>
       </View>
+      <View>
+        <FlatList
+          contentContainerStyle={{
+            alignItems: 'center',
+          }}
+          data={allCallUser}
+          renderItem={renderItem}
+          keyExtractor={item => item.deviceToken}
+          horizontal={true}
+          // scrollEnabled={false}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
     </>
   );
 }
@@ -510,5 +523,26 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 5,
+  },
+  rootImgContainer: {
+    marginTop: 5,
+    // paddingHorizontal: '3.4%',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    alignItems: 'center',
+  },
+  imgContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 45,
+    overflow: 'hidden',
+    elevation: 5, // This property is for Android
+  },
+  img: {width: '100%', height: '100%'},
+  text: {
+    marginTop: 5,
+    color: COLORS.darkBlue,
+    // color: 'blue',
+    fontSize: 16,
   },
 });
