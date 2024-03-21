@@ -376,7 +376,11 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     });
   };
 
-  const onClickQueuSeller = () => {};
+  const onClickQueuSeller = async item => {
+    console.log('clcked seller is -------------------', item);
+    // await onBackPress();
+    // await joinCall(item.roomId);
+  };
 
   useEffect(() => {
     // Call function 1
@@ -398,7 +402,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       onPress={() => {
         // setClickedSeller(item.id);
         // console.log('itemId---------->', item.id);
-        onClickQueuSeller();
+        onClickQueuSeller(item);
       }}>
       <View style={styles.imgContainer}>
         {/* <Image style={styles.img} source={{uri: item.data.imageUrl}} /> */}
