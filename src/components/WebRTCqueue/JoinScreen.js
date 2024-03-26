@@ -48,6 +48,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [isMuted, setIsMuted] = useState(false);
   const [startWebCamState, setStartWebCamState] = useState();
   const [allCallUser, setAllCallUsers] = useState([]);
+  const [currentCallerRoomId, setCurrentCallerRoomId] = useState(null);
   let allRooms = [];
   // let allRooms2 = ['4NugCWS7m8cnOwwuK4GS', '56cl0M4h7A3rXFWmTIrm'];
   async function fetchAllRooms() {
@@ -401,6 +402,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   };
 
   const joinCall = async id => {
+    setCurrentCallerRoomId(id);
     try {
       const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
       roomRef.once('value', async snapshot => {
@@ -425,7 +427,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       .ref(`/Sellers/${roomId}`)
       .on('value', snapshot => {
         const data = snapshot?.val();
-        if (data?.userCallStatus === false) {
+        if (data?.userCallStatus === false && allRooms.length === 0) {
           onBackPress();
         }
         // console.log('Data updated:', data);
@@ -536,7 +538,16 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     setRemoteStream(null);
     setCachedLocalPC(null);
 
-    await delleteRoomFromFirebase(roomId);
+    await delleteRoomFromFirebase(currentCallerRoomId);
+    try {
+      await database().ref(`/Sellers/${currentCallerRoomId}`).update({
+        sellerCallStatus: false,
+      });
+      // console.log('Data updated.', roomId);
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+
     // Join the new call
     await startLocalStream();
     await joinCall(item.roomId);
