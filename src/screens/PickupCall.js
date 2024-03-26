@@ -57,17 +57,17 @@ const PickupCall = () => {
     }
   }
 
-  // useEffect(() => {
-  //   const unsubscribe = database()
-  //     .ref(`/Sellers/${channelId}`)
-  //     .on('value', snapshot => {
-  //       const data = snapshot?.val();
-  //       if (data?.userCallStatus === false) {
-  //         cutCall();
-  //       }
-  //       console.log('Data updated:', data);
-  //     });
-  // }, []);
+  useEffect(() => {
+    const unsubscribe = database()
+      .ref(`/Sellers/${channelId}`)
+      .on('value', snapshot => {
+        const data = snapshot?.val();
+        if (data?.userCallStatus === false) {
+          cutCall();
+        }
+        console.log('Data updated:', data);
+      });
+  }, []);
 
   useEffect(() => {
     console.log('reached useEffect');
@@ -109,7 +109,22 @@ const PickupCall = () => {
     }
     dispatch(addChannelId(null));
     // route.params.remoteMessage = null;
-    navigation.navigate('QR_codeScreen');
+    const sellerRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
+    sellerRef.once('value', async snapshot => {
+      const sellerData = snapshot.val();
+      if (sellerData && sellerData.isSellerOnCall === true) {
+        console.log(
+          'if if ifififififififififififififififififififififififififififif',
+        );
+        // Seller exists and is already on another call, send notification A
+      } else {
+        console.log(
+          'else eelsejlk fjddlksfjalk;felseelseelseelseelseelseelseelseelseelseelseelsej',
+        );
+        // Seller doesn't exist or is available, send notification B
+        navigation.navigate('QR_codeScreen');
+      }
+    });
   };
 
   useEffect(() => {
