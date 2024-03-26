@@ -210,7 +210,14 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   }
 
   async function onBackPress() {
-    if (allRooms.length === 1) {
+    console.log(
+      'Outside allRoms empty -------------------->>>>>>>>>>>>>>>>>>>>',
+      allRooms.length,
+    );
+    if (allRooms.length === 1 || allRooms.length === 0) {
+      console.log(
+        'Inside allRoms empty -------------------->>>>>>>>>>>>>>>>>>>>',
+      );
       try {
         const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
         roomRef.once('value', async snapshot => {
@@ -346,7 +353,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
           console.error('Error deleting document and collections:', error);
         });
     }
-    if (allCallUser.length === 0) {
+    if (allCallUser.length === 0 || allCallUser.length === 1) {
       navigation.navigate('QR_codeScreen');
     }
   }
@@ -529,8 +536,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     setRemoteStream(null);
     setCachedLocalPC(null);
 
-    // await delleteRoomFromFirebase(roomId);
-
+    await delleteRoomFromFirebase(roomId);
     // Join the new call
     await startLocalStream();
     await joinCall(item.roomId);
