@@ -427,7 +427,11 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       .ref(`/Sellers/${roomId}`)
       .on('value', snapshot => {
         const data = snapshot?.val();
-        if (data?.userCallStatus === false && allRooms.length === 0) {
+        console.log('rooms calue -===================>', allCallUser.length);
+        if (
+          data?.userCallStatus === false &&
+          (allCallUser.length === 0 || allCallUser.length === 1)
+        ) {
           onBackPress();
         }
         // console.log('Data updated:', data);
