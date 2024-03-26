@@ -104,7 +104,127 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     );
   };
 
+  async function delleteRoomFromFirebase(roomId) {
+    if (remoteStream) {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('calleeCandidates') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    } else {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    }
+  }
+
   async function onBackPress() {
+    if (allRooms.length === 1) {
+      try {
+        const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
+        roomRef.once('value', async snapshot => {
+          if (snapshot.exists()) {
+            await roomRef.update({
+              isSellerOnCall: false,
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error updating data:', error);
+      }
+    }
+
     console.log('ALL user data ------------------------> ', allCallUser);
     if (cachedLocalPC) {
       localStream.getTracks().forEach(track => {
@@ -274,6 +394,23 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   };
 
   const joinCall = async id => {
+    try {
+      const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
+      roomRef.once('value', async snapshot => {
+        if (snapshot.exists()) {
+          await roomRef.update({
+            isSellerOnCall: true,
+          });
+        } else {
+          await roomRef.set({
+            isSellerOnCall: true,
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+
     await fetchAllRooms();
     // console.log('join Call rendered before fetching userDAtassss');
     // console.log('join Call rendered after fetching userDAtassss');
@@ -380,6 +517,23 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     console.log('clcked seller is -------------------', item);
     // await onBackPress();
     // await joinCall(item.roomId);
+
+    // Close the previous call
+    if (cachedLocalPC) {
+      localStream.getTracks().forEach(track => {
+        track.stop();
+      });
+      cachedLocalPC.close();
+    }
+    setLocalStream(null);
+    setRemoteStream(null);
+    setCachedLocalPC(null);
+
+    // await delleteRoomFromFirebase(roomId);
+
+    // Join the new call
+    await startLocalStream();
+    await joinCall(item.roomId);
   };
 
   useEffect(() => {
