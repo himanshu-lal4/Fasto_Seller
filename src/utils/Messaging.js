@@ -2,7 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 import {useNavigation} from '@react-navigation/native';
 import {addChannelId} from '../redux/callingChannelSlice';
 import {addIncomingUser} from '../redux/IncomingUserSlice';
-import notifee from '@notifee/react-native';
+import notifee, {AndroidImportance} from '@notifee/react-native';
 const handleNotificationClick = async (remoteMessage, navigation, dispatch) => {
   //   const navigation = useNavigation();
   console.log(
@@ -54,14 +54,17 @@ export const registerNotificationHandlers = (navigation, dispatch) => {
       navigation.navigate('PickupCall');
     } else {
       const channelId = await notifee.createChannel({
-        id: 'default',
-        name: 'Default Channel',
+        id: 'important',
+        name: 'Important Notification',
+        sound: 'default',
+        importance: AndroidImportance.HIGH,
       });
       await notifee.displayNotification({
         title: remoteMessage.notification.title,
         body: remoteMessage.notification.body,
         android: {
           channelId,
+          importance: AndroidImportance.HIGH,
           smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
           // pressAction is needed if you want the notification to open the app when pressed
           pressAction: {

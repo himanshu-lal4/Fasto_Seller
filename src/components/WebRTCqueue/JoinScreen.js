@@ -48,6 +48,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [isMuted, setIsMuted] = useState(false);
   const [startWebCamState, setStartWebCamState] = useState();
   const [allCallUser, setAllCallUsers] = useState([]);
+  const [allCallUsersState, setAllCallUsersState] = useState();
   const [currentCallerRoomId, setCurrentCallerRoomId] = useState(null);
   let allRooms = [];
   // let allRooms2 = ['4NugCWS7m8cnOwwuK4GS', '56cl0M4h7A3rXFWmTIrm'];
@@ -98,6 +99,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       }
     }
     setAllCallUsers(allUserDetails);
+    setAllCallUsersState(allUserDetails[0].roomId);
   };
 
   async function delleteRoomFromFirebase(roomId) {
@@ -363,6 +365,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   }, []);
 
   const startLocalStream = async () => {
+    console.log('inside ^^^^^^^^^^^^^^^^^^^^^^^^^startLocalStream');
     const isFront = true;
     const devices = await mediaDevices.enumerateDevices();
 
@@ -384,10 +387,15 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       },
     };
     const newStream = await mediaDevices.getUserMedia(constraints);
+    console.log(newStream, 'newStream@@@@@@@@@@@@@@@@@@@@@@@@@@');
     setLocalStream(newStream);
+    await fetchAllRooms();
     setStartWebCamState(true);
+    console.log(
+      'localStream*****************************',
+      localStream.toURL(),
+    );
   };
-
   const joinCall = async id => {
     setCurrentCallerRoomId(id);
     try {
@@ -407,7 +415,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       console.error('Error updating data:', error);
     }
 
-    await fetchAllRooms();
+    // await fetchAllRooms();
     // console.log('join Call rendered before fetching userDAtassss');
     // console.log('join Call rendered after fetching userDAtassss');
 
@@ -469,23 +477,33 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     } catch (error) {
       console.error('Error setting up peer connection:', error);
     }
+
+    const unsubscribe = database()
+      .ref(`/Sellers/${currentCallerRoomId}`)
+      .on('value', snapshot => {
+        const data = snapshot?.val();
+        if (data?.userCallStatus === false && allCallUser.length === 0) {
+          onBackPress();
+        }
+        // console.log('Data updated:', data);
+      });
   };
 
-  useEffect(() => {
-    if (allCallUser.length !== 0) {
-      const unsubscribe = database()
-        .ref(`/Sellers/${currentCallerRoomId}`)
-        .on('value', snapshot => {
-          const data = snapshot?.val();
-          console.log(data?.userCallStatus);
-          console.log(currentCallerRoomId);
-          if (data?.userCallStatus === false && allCallUser.length === 0) {
-            onBackPress();
-          }
-          // console.log('Data updated:', data);
-        });
-    }
-  }, [allCallUser]);
+  // useEffect(() => {
+  //   // if (allCallUser.length !== 0) {
+  //     const unsubscribe = database()
+  //       .ref(`/Sellers/${currentCallerRoomId}`)
+  //       .on('value', snapshot => {
+  //         const data = snapshot?.val();
+  //         console.log(data?.userCallStatus);
+  //         console.log(currentCallerRoomId);
+  //         if (data?.userCallStatus === false && allCallUser.length === 0) {
+  //           onBackPress();
+  //         }
+  //         // console.log('Data updated:', data);
+  //       });
+  //   // }
+  // }, []);
   const switchCamera = () => {
     localStream.getVideoTracks().forEach(track => track._switchCamera());
   };
@@ -520,15 +538,15 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     // await joinCall(item.roomId);
 
     // Close the previous call
-    if (cachedLocalPC) {
-      localStream.getTracks().forEach(track => {
-        track.stop();
-      });
-      cachedLocalPC.close();
-    }
-    setLocalStream(null);
-    setRemoteStream(null);
-    setCachedLocalPC(null);
+    // if (cachedLocalPC) {
+    //   localStream.getTracks().forEach(track => {
+    //     track.stop();
+    //   });
+    //   cachedLocalPC.close();
+    // }
+    // setLocalStream(null);
+    // setRemoteStream(null);
+    // setCachedLocalPC(null);
 
     await delleteRoomFromFirebase(currentCallerRoomId);
     try {
@@ -541,22 +559,23 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     }
 
     // Join the new call
-    await startLocalStream();
+    // await startLocalStream();
     await joinCall(item.roomId);
   };
 
   useEffect(() => {
     // Call function 1
+
     startLocalStream();
-  }, []); // Empty dependency array ensures this runs only once after mount
+  }, [navigation]); // Empty dependency array ensures this runs only once after mount
 
   useEffect(() => {
     // Check if state1 is updated, then call function 2
 
     if (startWebCamState === true) {
-      joinCall(roomId);
+      joinCall(allCallUser[0].roomId);
     }
-  }, [startWebCamState]);
+  }, [allCallUsersState]);
 
   const renderItem = ({item}) => (
     <TouchableOpacity
