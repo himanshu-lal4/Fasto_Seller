@@ -66,7 +66,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
 
           // console.log('AllRooms IDs:', allRooms);
           await fetchUserDetailsFromRooms();
-          console.log('user details fetched --------------- >>>>>>>>>>>>>>>.');
         },
         error => {
           console.error('Error fetching channel IDs:', error);
@@ -99,10 +98,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       }
     }
     setAllCallUsers(allUserDetails);
-    console.log(
-      'all userDetails after fetching data from rooms',
-      allUserDetails,
-    );
   };
 
   async function delleteRoomFromFirebase(roomId) {
@@ -211,14 +206,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   }
 
   async function onBackPress() {
-    console.log(
-      'Outside allRoms empty -------------------->>>>>>>>>>>>>>>>>>>>',
-      allRooms.length,
-    );
     if (allRooms.length === 1 || allRooms.length === 0) {
-      console.log(
-        'Inside allRoms empty -------------------->>>>>>>>>>>>>>>>>>>>',
-      );
       try {
         const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
         roomRef.once('value', async snapshot => {
@@ -233,7 +221,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       }
     }
 
-    console.log('ALL user data ------------------------> ', allCallUser);
     if (cachedLocalPC) {
       localStream.getTracks().forEach(track => {
         track.stop();
@@ -423,19 +410,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     await fetchAllRooms();
     // console.log('join Call rendered before fetching userDAtassss');
     // console.log('join Call rendered after fetching userDAtassss');
-    const unsubscribe = database()
-      .ref(`/Sellers/${roomId}`)
-      .on('value', snapshot => {
-        const data = snapshot?.val();
-        console.log('rooms calue -===================>', allCallUser.length);
-        if (
-          data?.userCallStatus === false &&
-          (allCallUser.length === 0 || allCallUser.length === 1)
-        ) {
-          onBackPress();
-        }
-        // console.log('Data updated:', data);
-      });
 
     // const roomRef = await firestore().collection('rooms').doc(id);
     const roomRef = firestore()
@@ -497,6 +471,21 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     }
   };
 
+  useEffect(() => {
+    if (allCallUser.length !== 0) {
+      const unsubscribe = database()
+        .ref(`/Sellers/${currentCallerRoomId}`)
+        .on('value', snapshot => {
+          const data = snapshot?.val();
+          console.log(data?.userCallStatus);
+          console.log(currentCallerRoomId);
+          if (data?.userCallStatus === false && allCallUser.length === 0) {
+            onBackPress();
+          }
+          // console.log('Data updated:', data);
+        });
+    }
+  }, [allCallUser]);
   const switchCamera = () => {
     localStream.getVideoTracks().forEach(track => track._switchCamera());
   };
@@ -527,7 +516,6 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   };
 
   const onClickQueuSeller = async item => {
-    console.log('clcked seller is -------------------', item);
     // await onBackPress();
     // await joinCall(item.roomId);
 
