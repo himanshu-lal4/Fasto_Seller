@@ -50,6 +50,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [allCallUser, setAllCallUsers] = useState([]);
   const [allCallUsersState, setAllCallUsersState] = useState();
   const [currentCallerRoomId, setCurrentCallerRoomId] = useState(null);
+  const [clickedUserFromQueue, setclickedUserFromQueue] = useState(false);
   let allRooms = [];
   // let allRooms2 = ['4NugCWS7m8cnOwwuK4GS', '56cl0M4h7A3rXFWmTIrm'];
   async function fetchAllRooms() {
@@ -545,9 +546,12 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     //   cachedLocalPC.close();
     // }
     // setLocalStream(null);
-    // setRemoteStream(null);
-    // setCachedLocalPC(null);
+    setRemoteStream(null);
+    setCachedLocalPC(null);
 
+    // await startLocalStream();
+    await joinCall(item.roomId);
+    setclickedUserFromQueue(true);
     await delleteRoomFromFirebase(currentCallerRoomId);
     try {
       await database().ref(`/Sellers/${currentCallerRoomId}`).update({
@@ -557,10 +561,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     } catch (error) {
       console.error('Error updating data:', error);
     }
-
-    // Join the new call
-    // await startLocalStream();
-    await joinCall(item.roomId);
+    // // Join the new call
   };
 
   useEffect(() => {
@@ -572,7 +573,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   useEffect(() => {
     // Check if state1 is updated, then call function 2
 
-    if (startWebCamState === true) {
+    if (startWebCamState === true && clickedUserFromQueue === false) {
       joinCall(allCallUser[0].roomId);
     }
   }, [allCallUsersState]);
