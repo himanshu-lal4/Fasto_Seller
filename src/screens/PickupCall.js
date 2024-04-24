@@ -29,26 +29,16 @@ const PickupCall = () => {
   const dispatch = useDispatch();
   const incomingUser = useSelector(state => state.incomingUser.value);
   const channelId = useSelector(state => state.callingChannel.value);
+  const sellerId = useSelector(state => state.userToken.UID);
   // const {remoteMessage} = route.params;
-  console.log('🚀 ~ useSelector ~ channelid:', channelId);
-  console.log('🚀 ~ PickupCall ~ incomingUser:', incomingUser);
   async function getIncomingUserData() {
-    console.log('reached getIncomingUserData');
-
     try {
       const documentSnapshot = await firestore()
         .collection('Users')
         .doc(incomingUser)
         .get();
 
-      console.log('User exists: ', documentSnapshot.exists);
-
       if (documentSnapshot.exists) {
-        console.log('User data: ', documentSnapshot.data().photoUrl);
-        console.log(
-          'documentSnapshot.data().data.photoUrl',
-          documentSnapshot.data(),
-        );
         setUserImgURL(documentSnapshot.data().photoUrl);
         setUserName(documentSnapshot.data().name);
       }
@@ -70,7 +60,6 @@ const PickupCall = () => {
   }, []);
 
   useEffect(() => {
-    console.log('reached useEffect');
     getIncomingUserData();
     animateBorder(borderWidth);
     animateBorder(borderWidth2);
@@ -96,7 +85,6 @@ const PickupCall = () => {
 
   const cutCall = async () => {
     if (channelId) {
-      console.log('inside cut call');
       try {
         await database().ref(`/Sellers/${channelId}`).update({
           sellerCallStatus: false,
@@ -105,11 +93,64 @@ const PickupCall = () => {
       } catch (error) {
         console.error('Error updating data:', error);
       }
+
+      await firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(channelId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(channelId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(channelId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+
       // navigation.navigate('QR_codeScreen');
     }
     dispatch(addChannelId(null));
     // route.params.remoteMessage = null;
-    navigation.navigate('QR_codeScreen');
+    const sellerRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
+    sellerRef.once('value', async snapshot => {
+      const sellerData = snapshot.val();
+      if (sellerData && sellerData.isSellerOnCall === true) {
+        // Seller exists and is already on another call, send notification A
+      } else {
+        // Seller doesn't exist or is available, send notification B
+        navigation.navigate('QR_codeScreen');
+      }
+    });
   };
 
   useEffect(() => {

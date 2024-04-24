@@ -1,5 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {Text, StyleSheet, Button, View, Image, BackHandler} from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  Button,
+  View,
+  Image,
+  BackHandler,
+  FlatList,
+} from 'react-native';
 
 import {
   RTCPeerConnection,
@@ -16,6 +24,9 @@ import microphoneImage from '../../assets/images/microphone.png';
 import speakerOnImg from '../../assets/images/speaker.png';
 import speakerOfImg from '../../assets/images/speaker-filled-audio-tool.png';
 import InCallManager from 'react-native-incall-manager';
+import {useSelector} from 'react-redux';
+import {DummyData} from './DummyData';
+import {COLORS, FONTS} from '../../assets/theme';
 const configuration = {
   iceServers: [
     {
@@ -26,6 +37,9 @@ const configuration = {
 };
 
 export default function JoinScreen({setScreen, screens, roomId, navigation}) {
+  // console.log('roomId----->', roomId);
+  const sellerId = useSelector(state => state.userToken.UID);
+  // console.log('🚀 ~ JoinScreen ~ sellerId:', sellerId);
   const [localStream, setLocalStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
   const [cachedLocalPC, setCachedLocalPC] = useState();
@@ -33,26 +47,306 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   const [speakerOn, setSpeakerOn] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [startWebCamState, setStartWebCamState] = useState();
+  const [allCallUser, setAllCallUsers] = useState([]);
+  const [allCallUsersState, setAllCallUsersState] = useState();
+  const [currentCallerRoomId, setCurrentCallerRoomId] = useState(null);
+  const [clickedUserFromQueue, setclickedUserFromQueue] = useState(false);
+  let allRooms = [];
+  // let allRooms2 = ['4NugCWS7m8cnOwwuK4GS', '56cl0M4h7A3rXFWmTIrm'];
+  async function fetchAllRooms() {
+    await firestore()
+      .collection('videoRoom')
+      .doc(sellerId)
+      .collection('rooms')
+      .onSnapshot(
+        async querySnapshot => {
+          allRooms = [];
+
+          querySnapshot.forEach(doc => {
+            allRooms.push(doc.id);
+          });
+
+          // console.log('AllRooms IDs:', allRooms);
+          await fetchUserDetailsFromRooms();
+        },
+        error => {
+          console.error('Error fetching channel IDs:', error);
+        },
+      );
+  }
+
+  const fetchUserDetailsFromRooms = async () => {
+    const allUserDetails = [];
+    for (let i = 0; i < allRooms.length; i++) {
+      const roomId = allRooms[i];
+
+      // Get a reference to the currCallData document for each room
+      const currCallDataRef = await firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('currCallData')
+        .doc(sellerId);
+
+      // Get the userData from currCallData for each room
+      const currCallDataSnapshot = await currCallDataRef.get();
+      if (currCallDataSnapshot.exists) {
+        const userData = currCallDataSnapshot.data();
+        const {name, email, photoUrl, deviceToken} = userData.userData;
+        allUserDetails.push({name, email, photoUrl, deviceToken, roomId});
+      } else {
+        console.log('Document not found');
+      }
+    }
+    setAllCallUsers(allUserDetails);
+    setAllCallUsersState(allUserDetails[0].roomId);
+  };
+
+  async function delleteRoomFromFirebase(roomId) {
+    if (remoteStream) {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('calleeCandidates') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    } else {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    }
+  }
+
   async function onBackPress() {
+    if (allRooms.length === 1 || allRooms.length === 0) {
+      try {
+        const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
+        roomRef.once('value', async snapshot => {
+          if (snapshot.exists()) {
+            await roomRef.update({
+              isSellerOnCall: false,
+            });
+          }
+        });
+      } catch (error) {
+        console.error('Error updating data:', error);
+      }
+    }
+
     if (cachedLocalPC) {
       localStream.getTracks().forEach(track => {
         track.stop();
       });
       cachedLocalPC.close();
     }
-    setLocalStream();
+    // setLocalStream();
     setRemoteStream();
     setCachedLocalPC();
     try {
       await database().ref(`/Sellers/${roomId}`).update({
         sellerCallStatus: false,
       });
-      console.log('Data updated.', roomId);
+      // console.log('Data updated.', roomId);
     } catch (error) {
       console.error('Error updating data:', error);
     }
-    InCallManager.stop();
-    navigation.navigate('QR_codeScreen');
+
+    if (remoteStream) {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('calleeCandidates') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    } else {
+      firestore()
+        .collection('videoRoom')
+        .doc(sellerId)
+        .collection('rooms')
+        .doc(roomId)
+        .collection('callerCandidates') // First collection within 'channelId' document
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 2: Delete all documents within the second collection
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .collection('currCallData') // Second collection within 'channelId' document
+            .get();
+        })
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            doc.ref.delete();
+          });
+        })
+        .then(() => {
+          // Step 3: Delete the 'channelId' document
+          return firestore()
+            .collection('videoRoom')
+            .doc(sellerId)
+            .collection('rooms')
+            .doc(roomId)
+            .delete();
+        })
+        .then(() => {
+          console.log('Document and its collections deleted successfully.');
+        })
+        .catch(error => {
+          console.error('Error deleting document and collections:', error);
+        });
+    }
+    if (allCallUser.length === 0 || allCallUser.length === 1) {
+      navigation.navigate('QR_codeScreen');
+    }
   }
   useEffect(() => {
     const backAction = async () => {
@@ -72,6 +366,7 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
   }, []);
 
   const startLocalStream = async () => {
+    console.log('inside ^^^^^^^^^^^^^^^^^^^^^^^^^startLocalStream');
     const isFront = true;
     const devices = await mediaDevices.enumerateDevices();
 
@@ -93,27 +388,47 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       },
     };
     const newStream = await mediaDevices.getUserMedia(constraints);
+    console.log(newStream, 'newStream@@@@@@@@@@@@@@@@@@@@@@@@@@');
     setLocalStream(newStream);
+    await fetchAllRooms();
     setStartWebCamState(true);
+    console.log(
+      'localStream*****************************',
+      localStream.toURL(),
+    );
   };
-
   const joinCall = async id => {
-    console.log('join Call rendered');
-    const unsubscribe = database()
-      .ref(`/Sellers/${roomId}`)
-      .on('value', snapshot => {
-        const data = snapshot?.val();
-        if (data?.userCallStatus === false) {
-          onBackPress();
+    setCurrentCallerRoomId(id);
+    try {
+      const roomRef = database().ref(`/SellersOnCallStatus/${sellerId}`);
+      roomRef.once('value', async snapshot => {
+        if (snapshot.exists()) {
+          await roomRef.update({
+            isSellerOnCall: true,
+          });
+        } else {
+          await roomRef.set({
+            isSellerOnCall: true,
+          });
         }
-        console.log('Data updated:', data);
       });
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
 
-    const roomRef = await firestore().collection('rooms').doc(id);
+    // await fetchAllRooms();
+    // console.log('join Call rendered before fetching userDAtassss');
+    // console.log('join Call rendered after fetching userDAtassss');
+
+    // const roomRef = await firestore().collection('rooms').doc(id);
+    const roomRef = firestore()
+      .collection('videoRoom')
+      .doc(sellerId)
+      .collection('rooms')
+      .doc(id);
     const roomSnapshot = await roomRef.get();
 
     if (!roomSnapshot.exists) return;
-    console.log('reached till last');
     const offer = roomSnapshot.data().offer;
     if (!offer) {
       console.error('Offer not found in room data.');
@@ -163,8 +478,33 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     } catch (error) {
       console.error('Error setting up peer connection:', error);
     }
+
+    const unsubscribe = database()
+      .ref(`/Sellers/${currentCallerRoomId}`)
+      .on('value', snapshot => {
+        const data = snapshot?.val();
+        if (data?.userCallStatus === false && allCallUser.length === 0) {
+          onBackPress();
+        }
+        // console.log('Data updated:', data);
+      });
   };
 
+  // useEffect(() => {
+  //   // if (allCallUser.length !== 0) {
+  //     const unsubscribe = database()
+  //       .ref(`/Sellers/${currentCallerRoomId}`)
+  //       .on('value', snapshot => {
+  //         const data = snapshot?.val();
+  //         console.log(data?.userCallStatus);
+  //         console.log(currentCallerRoomId);
+  //         if (data?.userCallStatus === false && allCallUser.length === 0) {
+  //           onBackPress();
+  //         }
+  //         // console.log('Data updated:', data);
+  //       });
+  //   // }
+  // }, []);
   const switchCamera = () => {
     localStream.getVideoTracks().forEach(track => track._switchCamera());
   };
@@ -178,11 +518,9 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       // setSpeakerphoneOn;
       // InCallManager.setForceSpeakerphoneOn(true);
       InCallManager.setSpeakerphoneOn(true);
-      console.log('inside toggleSpeaker if', newMode);
     } else {
       // InCallManager.setForceSpeakerphoneOn(false);
       InCallManager.setSpeakerphoneOn(false);
-      console.log('inside toggleSpeaker else', newMode);
     }
   };
 
@@ -196,28 +534,66 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
     });
   };
 
+  const onClickQueuSeller = async item => {
+    // await onBackPress();
+    // await joinCall(item.roomId);
+
+    // Close the previous call
+    // if (cachedLocalPC) {
+    //   localStream.getTracks().forEach(track => {
+    //     track.stop();
+    //   });
+    //   cachedLocalPC.close();
+    // }
+    // setLocalStream(null);
+    setRemoteStream(null);
+    setCachedLocalPC(null);
+
+    // await startLocalStream();
+    await joinCall(item.roomId);
+    setclickedUserFromQueue(true);
+    await delleteRoomFromFirebase(currentCallerRoomId);
+    try {
+      await database().ref(`/Sellers/${currentCallerRoomId}`).update({
+        sellerCallStatus: false,
+      });
+      // console.log('Data updated.', roomId);
+    } catch (error) {
+      console.error('Error updating data:', error);
+    }
+    // // Join the new call
+  };
+
   useEffect(() => {
     // Call function 1
+
     startLocalStream();
-  }, []); // Empty dependency array ensures this runs only once after mount
+  }, [navigation]); // Empty dependency array ensures this runs only once after mount
 
   useEffect(() => {
     // Check if state1 is updated, then call function 2
-    console.log(
-      'inside useEffect startWebCamState value============>',
-      startWebCamState,
-    );
-    if (startWebCamState === true) {
-      console.log(
-        'inside useEffect if condition startWebCamState value============>',
-        startWebCamState,
-      );
-      joinCall(roomId);
+
+    if (startWebCamState === true && clickedUserFromQueue === false) {
+      joinCall(allCallUser[0].roomId);
     }
-  }, [startWebCamState]);
-  console.log(
-    'outside useEffect startWebCamState value============>',
-    startWebCamState,
+  }, [allCallUsersState]);
+
+  const renderItem = ({item}) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.rootImgContainer}
+      onPress={() => {
+        // setClickedSeller(item.id);
+        // console.log('itemId---------->', item.id);
+        onClickQueuSeller(item);
+      }}>
+      <View style={styles.imgContainer}>
+        {/* <Image style={styles.img} source={{uri: item.data.imageUrl}} /> */}
+        <Image style={styles.img} source={{uri: item.photoUrl}} />
+      </View>
+      {/* <Text style={[FONTS.body3, styles.text]}>{item.data.name}</Text> */}
+      <Text style={[FONTS.body3, styles.text]}>{item.name}</Text>
+    </TouchableOpacity>
   );
 
   return (
@@ -226,7 +602,17 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
       {/* <Text style={styles.heading}>Room : {roomId}</Text> */}
 
       {/* <View style={styles.callButtons}> */}
-
+      {/* <FlatList
+        contentContainerStyle={{
+          marginTop: '10%',
+          alignItems: 'center',
+        }}
+        data={allRooms}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        horizontal={true}
+      />
+      <Text>Himanshu</Text> */}
       <View style={{display: 'flex', flex: 1}}>
         <View style={styles.rtcview}>
           {localStream && (
@@ -280,6 +666,19 @@ export default function JoinScreen({setScreen, screens, roomId, navigation}) {
           </TouchableOpacity>
         </View>
       </View>
+      <View>
+        <FlatList
+          contentContainerStyle={{
+            alignItems: 'center',
+          }}
+          data={allCallUser}
+          renderItem={renderItem}
+          keyExtractor={item => item.deviceToken}
+          horizontal={true}
+          // scrollEnabled={false}
+          showsHorizontalScrollIndicator={false}
+        />
+      </View>
     </>
   );
 }
@@ -318,5 +717,26 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     margin: 5,
+  },
+  rootImgContainer: {
+    marginTop: 5,
+    // paddingHorizontal: '3.4%',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    alignItems: 'center',
+  },
+  imgContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 45,
+    overflow: 'hidden',
+    elevation: 5, // This property is for Android
+  },
+  img: {width: '100%', height: '100%'},
+  text: {
+    marginTop: 5,
+    color: COLORS.darkBlue,
+    // color: 'blue',
+    fontSize: 16,
   },
 });
